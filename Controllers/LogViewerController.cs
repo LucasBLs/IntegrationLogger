@@ -10,7 +10,7 @@ public class LogViewerController : Controller
 {
     private readonly IIntegrationLogService _integrationLogService;
     private readonly IIntegrationLogQueryable _integrationLogQueryable;
-
+ 
     public LogViewerController(IIntegrationLogService integrationLogService, IIntegrationLogQueryable integrationLogQueryable)
     {
         _integrationLogService = integrationLogService;
