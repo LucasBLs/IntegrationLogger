@@ -18,7 +18,6 @@ public class PaginatedList<T> : List<T>
     }
 
     public bool HasPreviousPage => PageIndex > 1;
-
     public bool HasNextPage => PageIndex < TotalPages;
 
     public static async Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int pageIndex = 1, int pageSize = 0, bool pagination = true)
