@@ -14,6 +14,7 @@ public class RelationalIntegrationLogService : IIntegrationLogService, IIntegrat
         _context = context;
     }
 
+    #region AddLogs
     public IntegrationLog AddLog(string integrationName, string message, string externalSystem, string sourceSystem)
     {
         return Log(integrationName, message, externalSystem, sourceSystem);
@@ -79,7 +80,9 @@ public class RelationalIntegrationLogService : IIntegrationLogService, IIntegrat
         _context.SaveChanges();
         return item;
     }
+    #endregion
 
+    #region GetLogs
     public async Task<List<IntegrationLog>> SearchLogs(DateTimeOffset startDate, DateTimeOffset endDate, string? integrationName = null, string? externalSystem = null, string? sourceSystem = null)
     {
         var query = _context.IntegrationLogs.AsNoTracking().AsQueryable().Where(l => l.Timestamp >= startDate && l.Timestamp <= endDate);
@@ -115,6 +118,9 @@ public class RelationalIntegrationLogService : IIntegrationLogService, IIntegrat
             .OrderByDescending(x => x.Timestamp)
             .ToListAsync();
     }
+    #endregion
+
+    #region Context
     public IQueryable<IntegrationLog> GetIntegrationLogs()
     {
         return _context.IntegrationLogs;
@@ -127,4 +133,5 @@ public class RelationalIntegrationLogService : IIntegrationLogService, IIntegrat
     {
         return _context.IntegrationItems;
     }
+    #endregion
 }
