@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
-    <PackageId>IntegratorLogger</PackageId>
+    <PackageId>LLemosIntegratorLogger</PackageId>
     <Version>1.0.0</Version>
     <License>MIT</License>
     <Authors>Lucas Lemos</Authors>
