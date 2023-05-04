@@ -10,13 +10,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@main
+    - uses: actions/checkout@v2
 
     - name: Set up .NET Core
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: '6.0.x'
     
+    - name: Configure NuGet credentials
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_PACKAGES_TOKEN }}
+      run: |
+        echo "Setting up NuGet credentials..."
+        dotnet nuget add source https://nuget.pkg.github.com/LucasBLs/index.json --name github --username LucasBLs --password $NUGET_AUTH_TOKEN --store-password-in-clear-text
+
     - name: Build with dotnet
       run: dotnet build --configuration Release
 
