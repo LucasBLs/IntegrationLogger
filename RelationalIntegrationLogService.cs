@@ -33,13 +33,11 @@ public class RelationalIntegrationLogService : IIntegrationLogService, IIntegrat
         _context.SaveChanges();
         return log;
     }
-    public IntegrationDetail AddDetail(IntegrationLog log, ActionType actionType, string? entityName, IntegrationStatus status, string detailIdentifier, string? message, string? errorMessage)
+    public IntegrationDetail AddDetail(IntegrationLog log, IntegrationStatus status, string detailIdentifier, string? message, string? errorMessage)
     {
         IntegrationDetail detail = new()
         {
             IntegrationLogId = log.Id,
-            ActionType = actionType,
-            EntityName = entityName,
             Status = status,
             DetailIdentifier = detailIdentifier,
             Message = message,

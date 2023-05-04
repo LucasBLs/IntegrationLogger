@@ -3,39 +3,41 @@ using System;
 using IntegrationLogger.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Oracle.EntityFrameworkCore.Metadata;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace IntegrationLogger.Migrations.MigrationOracle
+namespace IntegrationLogger.Migrations.MigrationPostgreSQL
 {
-    [DbContext(typeof(IntegrationLogContextOracle))]
-    partial class IntegrationLogContextOracleModelSnapshot : ModelSnapshot
+    [DbContext(typeof(IntegrationLogContextPostgreSQL))]
+    [Migration("20230504210925_InitialMigrationPostgreSQL")]
+    partial class InitialMigrationPostgreSQL
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("ProductVersion", "6.0.16")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("IntegrationLogger.Models.ApiGatewayDetail", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("ApiGatewayLogId")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("HeaderName")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("HeaderValue")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -48,28 +50,28 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ClientIp")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("HttpMethod")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ProjectName")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("text");
 
                     b.Property<long?>("RequestDuration")
-                        .HasColumnType("NUMBER(19)");
+                        .HasColumnType("bigint");
 
                     b.Property<string>("RequestPath")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("text");
 
                     b.Property<int?>("StatusCode")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<DateTimeOffset>("Timestamp")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -80,25 +82,25 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("DetailIdentifier")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ErrorMessage")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("text");
 
                     b.Property<Guid>("IntegrationLogId")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Message")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("text");
 
                     b.Property<int>("Status")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<DateTimeOffset>("Timestamp")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -113,28 +115,28 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ErrorMessage")
-                        .HasColumnType("CLOB");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("IntegrationDetailId")
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ItemIdentifier")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("text");
 
                     b.Property<int>("ItemStatus")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("ItemType")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Message")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("Timestamp")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -149,22 +151,22 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("RAW(16)");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ExternalSystem")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("IntegrationName")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Message")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("text");
 
                     b.Property<string>("SourceSystem")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("Timestamp")
-                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 

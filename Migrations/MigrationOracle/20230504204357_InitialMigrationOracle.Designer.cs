@@ -12,7 +12,7 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace IntegrationLogger.Migrations.MigrationOracle
 {
     [DbContext(typeof(IntegrationLogContextOracle))]
-    [Migration("20230424183943_InitialMigrationOracle")]
+    [Migration("20230504204357_InitialMigrationOracle")]
     partial class InitialMigrationOracle
     {
         /// <inheritdoc />
@@ -25,19 +25,67 @@ namespace IntegrationLogger.Migrations.MigrationOracle
 
             OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("IntegrationLogger.Models.ApiGatewayDetail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<Guid>("ApiGatewayLogId")
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<string>("HeaderName")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<string>("HeaderValue")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApiGatewayLogId");
+
+                    b.ToTable("ApiGatewayDetail", (string)null);
+                });
+
+            modelBuilder.Entity("IntegrationLogger.Models.ApiGatewayLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<string>("ClientIp")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<string>("HttpMethod")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<string>("ProjectName")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<long?>("RequestDuration")
+                        .HasColumnType("NUMBER(19)");
+
+                    b.Property<string>("RequestPath")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<int?>("StatusCode")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<DateTimeOffset>("Timestamp")
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApiGatewayLog", (string)null);
+                });
+
             modelBuilder.Entity("IntegrationLogger.Models.IntegrationDetail", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("RAW(16)");
 
-                    b.Property<int>("ActionType")
-                        .HasColumnType("NUMBER(10)");
-
                     b.Property<string>("DetailIdentifier")
-                        .HasColumnType("NVARCHAR2(2000)");
-
-                    b.Property<string>("EntityName")
                         .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("ErrorMessage")
@@ -128,6 +176,17 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                     b.ToTable("IntegrationLog", (string)null);
                 });
 
+            modelBuilder.Entity("IntegrationLogger.Models.ApiGatewayDetail", b =>
+                {
+                    b.HasOne("IntegrationLogger.Models.ApiGatewayLog", "ApiGatewayLog")
+                        .WithMany("Details")
+                        .HasForeignKey("ApiGatewayLogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApiGatewayLog");
+                });
+
             modelBuilder.Entity("IntegrationLogger.Models.IntegrationDetail", b =>
                 {
                     b.HasOne("IntegrationLogger.Models.IntegrationLog", "IntegrationLog")
@@ -148,6 +207,11 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                         .IsRequired();
 
                     b.Navigation("IntegrationDetail");
+                });
+
+            modelBuilder.Entity("IntegrationLogger.Models.ApiGatewayLog", b =>
+                {
+                    b.Navigation("Details");
                 });
 
             modelBuilder.Entity("IntegrationLogger.Models.IntegrationDetail", b =>

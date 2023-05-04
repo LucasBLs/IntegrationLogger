@@ -13,11 +13,17 @@ public abstract class IntegrationLogContextBase : DbContext
     public DbSet<IntegrationDetail> IntegrationDetails { get; set; } = default!;
     public DbSet<IntegrationItem> IntegrationItems { get; set; } = default!;
 
+    public DbSet<ApiGatewayLog> ApiGatewayLogs { get; set; } = default!;
+    public DbSet<ApiGatewayDetail> ApiGatewayDetails { get; set; } = default!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new IntegrationLogMap());
         modelBuilder.ApplyConfiguration(new IntegrationDetailMap());
         modelBuilder.ApplyConfiguration(new IntegrationItemMap());
+
+        modelBuilder.ApplyConfiguration(new ApiGatewayLogMap());
+        modelBuilder.ApplyConfiguration(new ApiGatewayDetailMap());
     }
 }
 

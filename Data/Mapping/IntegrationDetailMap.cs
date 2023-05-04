@@ -16,10 +16,10 @@ public class IntegrationDetailMap : IEntityTypeConfiguration<IntegrationDetail>
         builder.Property(x => x.Id)
             .IsRequired();
 
-        builder.Property(x => x.ActionType)
-            .HasConversion(new EnumToNumberConverter<ActionType, int>());
+        //builder.Property(x => x.ActionType)
+        //    .HasConversion(new EnumToNumberConverter<ActionType, int>());
 
-        builder.Property(x => x.EntityName);
+        //builder.Property(x => x.EntityName);
 
         builder.Property(x => x.Status)
             .HasConversion(new EnumToNumberConverter<IntegrationStatus, int>());

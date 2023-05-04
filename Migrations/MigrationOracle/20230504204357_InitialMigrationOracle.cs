@@ -12,6 +12,24 @@ namespace IntegrationLogger.Migrations.MigrationOracle
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "ApiGatewayLog",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "RAW(16)", nullable: false),
+                    ProjectName = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    RequestPath = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    HttpMethod = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    ClientIp = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    StatusCode = table.Column<int>(type: "NUMBER(10)", nullable: true),
+                    RequestDuration = table.Column<long>(type: "NUMBER(19)", nullable: true),
+                    Timestamp = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApiGatewayLog", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "IntegrationLog",
                 columns: table => new
                 {
@@ -28,12 +46,30 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                 });
 
             migrationBuilder.CreateTable(
+                name: "ApiGatewayDetail",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "RAW(16)", nullable: false),
+                    HeaderName = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    HeaderValue = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    ApiGatewayLogId = table.Column<Guid>(type: "RAW(16)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApiGatewayDetail", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ApiGatewayDetail_ApiGatewayLog_ApiGatewayLogId",
+                        column: x => x.ApiGatewayLogId,
+                        principalTable: "ApiGatewayLog",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "IntegrationDetail",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "RAW(16)", nullable: false),
-                    ActionType = table.Column<int>(type: "NUMBER(10)", nullable: false),
-                    EntityName = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
                     Status = table.Column<int>(type: "NUMBER(10)", nullable: false),
                     DetailIdentifier = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
                     Message = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
@@ -77,6 +113,11 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_ApiGatewayDetail_ApiGatewayLogId",
+                table: "ApiGatewayDetail",
+                column: "ApiGatewayLogId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_IntegrationDetail_IntegrationLogId",
                 table: "IntegrationDetail",
                 column: "IntegrationLogId");
@@ -106,7 +147,13 @@ namespace IntegrationLogger.Migrations.MigrationOracle
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "ApiGatewayDetail");
+
+            migrationBuilder.DropTable(
                 name: "IntegrationItem");
+
+            migrationBuilder.DropTable(
+                name: "ApiGatewayLog");
 
             migrationBuilder.DropTable(
                 name: "IntegrationDetail");
