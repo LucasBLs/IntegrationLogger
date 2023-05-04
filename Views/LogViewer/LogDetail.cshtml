@@ -1,0 +1,260 @@
+@using IntegrationLogger.Enums;
+@using IntegrationLogger.Models;
+@using IntegrationLogger.Utils;
+@using System.Text;
+@using Microsoft.AspNetCore.Html;
+@model PaginatedList<IntegrationLogger.Models.IntegrationDetail>
+@{
+    ViewData["Title"] = "Visualização de detalhes do logs";
+    var count = 0;
+    IntegrationLog integrationLog = new();
+
+    if (ViewData["IntegrationLogData"] is IntegrationLog logData)
+    {
+        integrationLog = logData;
+    }
+    bool onlyWithIdentifier = ViewData["OnlyWithIdentifier"] as bool? ?? false;
+
+    var allSelected = onlyWithIdentifier ? new HtmlString("") : new HtmlString("selected");
+    var identifierSelected = onlyWithIdentifier ? new HtmlString("selected") : new HtmlString("");
+}
+
+<style>
+    .selected-success {
+        border: 3px solid #00b509 !important;
+    }
+
+    .selected-failed {
+        border: 3px solid #b50900 !important;
+    }
+
+    .card-text {
+        display: block;
+        margin-bottom: 4px;
+    }
+</style>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Logs - Detalhe</h5>
+        <form asp-action="LogDetail" method="get">
+            <div class="form-actions no-color">
+                <p>
+                    Buscar por IntegrationName: <input class="form-control-sm" type="search" name="SearchString" value="@ViewData["CurrentFilter"]" />
+                    <select class="form-control-sm" name="onlyWithIdentifier">
+                        <optgroup label="Todos">
+                            <option value="false" selected="@allSelected">Todos</option>
+                        </optgroup>
+                        <optgroup label="Somente com identificador">
+                            <option value="true" selected="@identifierSelected">Somente com identificador</option>
+                        </optgroup>
+                    </select>
+                    <input type="submit" value="Buscar" class="btn btn-light" />
+                    @Html.ActionLink("Voltar para o log principal", "Index", new { @class = "link-default" })
+                </p>
+                <p>
+                    <div class="card" style="background-color: lightgray">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <span><b>IntegrationName:</b> @integrationLog.IntegrationName</span>
+                                </div>
+                                <div class="col">
+                                    <span><b>SourceSystem:</b> @integrationLog.SourceSystem</span>
+                                </div>
+                                <div class="col">
+                                    <span><b>ExternalSystem:</b> @integrationLog.ExternalSystem</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </p>
+            </div>
+        </form>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <td><b>ActionType</b></td>
+                    <td><b>EntityName</b></td>
+                    <td><b>Status</b></td>
+                    <td><b>Identificador</b></td>
+                    <td><b>Message</b></td>
+                    <td><b>Timestamp</b></td>
+                    <td><b>Itens</b></td>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                @foreach (var log in Model)
+                {
+                    string modalLogItem = $"#ModalItem{count++}";
+                    string TableClass = ((IDictionary<Guid, bool>)ViewData["ErrorStatusDict"]!)[log.Id] ? "table-danger" : "table-success";
+                    <tr class="@TableClass">
+                        <td>@log.ActionType</td>
+                        <td>@log.EntityName</td>
+                        <td>@log.Status</td>
+                        <td>@log.DetailIdentifier</td>
+                        <td>@log.Message</td>
+                        <td>@log.Timestamp</td>
+                        <td>
+                            <a href="#" class="link-primary" data-bs-toggle="modal" data-bs-target=@modalLogItem data-log-id="@log.Id">
+                                <b>Visualizar</b>
+                            </a>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id=@modalLogItem.Replace("#", "") tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-xl">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">@log.Message</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body" style="overflow-y: scroll; max-height: calc(100vh - 200px);">
+                                            <div class="container">
+                                                <div class="row">
+                                                    <div class="col-4" style="overflow-y: scroll; max-height: calc(100vh - 220px);">
+                                                        <!-- Cards aqui -->
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <div id="details-panel">
+                                                            <div class="card card-body" style="height: calc(100vh - 220px);">
+                                                                <label id="details-label" class="form-label"></label>
+                                                                <textarea class="form-control" id="details-textarea" rows="20" readonly></textarea>
+                                                                <button class="btn btn-primary mt-2 copy-textarea">Copiar</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @{
+            var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+            var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+        }
+
+        @Html.ActionLink("Previous", "LogDetail", new { sortLogDetail = ViewData["CurrentSort"], pageNumber = Model.PageIndex - 1, currentFilter = ViewData["CurrentFilter"], onlyWithIdentifier = onlyWithIdentifier }, new { @class = "btn btn-default " + prevDisabled })
+
+        @Html.ActionLink("Next", "LogDetail", new { sortLogDetail = ViewData["CurrentSort"], pageNumber = Model.PageIndex + 1, currentFilter = ViewData["CurrentFilter"], onlyWithIdentifier = onlyWithIdentifier }, new { @class = "btn btn-default " + nextDisabled })
+
+    </div>
+</div>
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        const modals = document.querySelectorAll('.modal');
+
+        function displayDetails(identifier, errorMessage, modal) {
+            const detailsLabel = modal.querySelector('#details-label');
+            const detailsTextarea = modal.querySelector('#details-textarea');
+
+            detailsLabel.textContent = `Detalhes do item:`;
+            detailsTextarea.value = JSON.stringify(JSON.parse(errorMessage), null, 2);
+        }
+
+        modals.forEach(function (modal) {
+            modal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const logId = button.getAttribute('data-log-id');
+                const url = `/LogViewer/GetLogItems?id=${logId}`;
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(logItems => {
+                        // Limpar detalhes existentes
+                        const detailsContainer = modal.querySelector('.container .row .col-4');
+                        detailsContainer.innerHTML = '';
+                        let firstLogItem = null;
+
+                        // Adicionar novos detalhes
+                        logItems.forEach((logItem, index) => {
+                            const cardBorderColor = logItem.itemStatus === 0 ? 'border-success' : 'border-danger';
+                            const cardTextColor = logItem.itemStatus === 0 ? 'text-success' : 'text-danger';
+
+                            // Salvar o primeiro logItem
+                            if (index === 0) {
+                                firstLogItem = logItem;
+                            }
+
+                            const card = document.createElement('div');
+                            card.classList.add('card', cardBorderColor, 'mb-3');
+                            card.style.maxWidth = '18rem';
+                            card.addEventListener('click', () => displayDetails(logItem.itemIdentifier, logItem.errorMessage, modal));
+
+                            const cardBody = document.createElement('div');
+                            cardBody.classList.add('card-body', cardTextColor);
+
+@*                            const title = document.createElement('h5');
+                            title.classList.add('card-title');
+                            title.textContent = `ID - ${logItem.itemIdentifier}`;
+                            cardBody.appendChild(title);*@
+
+                            const message = document.createElement('span');
+                            message.classList.add('card-text');
+                            message.textContent = logItem.message;
+                            cardBody.appendChild(message);
+
+           @*                 const itemType = document.createElement('span');
+                            itemType.classList.add('card-text');
+                            itemType.textContent = `Tipo - ${logItem.itemType}`;
+                            cardBody.appendChild(itemType);*@
+
+                            const formatDate = (dateString) => {
+                                const date = new Date(dateString);
+                                const year = date.getFullYear();
+                                const month = String(date.getMonth() + 1).padStart(2, '0');
+                                const day = String(date.getDate()).padStart(2, '0');
+                                const hours = String(date.getHours()).padStart(2, '0');
+                                const minutes = String(date.getMinutes()).padStart(2, '0');
+                                const seconds = String(date.getSeconds()).padStart(2, '0');
+                                const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
+
+                                return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}:${milliseconds}`;
+                            };
+
+                            const timestamp = document.createElement('span');
+                            timestamp.textContent = formatDate(logItem.timestamp);
+                            cardBody.appendChild(timestamp);
+
+
+                            card.appendChild(cardBody);
+                            detailsContainer.appendChild(card);
+
+                            card.addEventListener('click', () => {
+                                const selectedCard = modal.querySelector('.card.selected-success, .card.selected-failed');
+                                if (selectedCard) {
+                                    selectedCard.classList.remove('selected-success', 'selected-failed');
+                                }
+                                const selectedClass = logItem.itemStatus === 0 ? 'selected-success' : 'selected-failed';
+                                card.classList.add(selectedClass);
+                                displayDetails(logItem.itemIdentifier, logItem.errorMessage, modal);
+                            });
+                        });
+                        // Exibir detalhes do primeiro logItem no textarea
+                        if (firstLogItem) {
+                            displayDetails(firstLogItem.itemIdentifier, firstLogItem.errorMessage, modal);
+                        }
+                    })
+                    .catch(error => console.error('Error fetching log items:', error));
+            });
+        });
+        const copyTextareaBtns = document.querySelectorAll('.copy-textarea');
+        copyTextareaBtns.forEach(function (copyTextareaBtn) {
+            copyTextareaBtn.addEventListener('click', function () {
+                const textarea = this.previousElementSibling;
+                textarea.focus();
+                textarea.select();
+                document.execCommand('copy');
+            });
+        });
+    });
+</script>
