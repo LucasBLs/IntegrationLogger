@@ -11,7 +11,7 @@ public static class IntegrationLogServiceFactory
         if (config.Provider == DatabaseProvider.MongoDB)
         {
             if (config.MongoDatabaseName == null)
-                throw new ArgumentNullException("Set value to MongoDatabaseName.");
+                throw new ArgumentNullException(config.MongoDatabaseName, "Set value to MongoDatabaseName.");
             return serviceProvider.GetRequiredService<MongoDBIntegrationLogService>();
         }
         else

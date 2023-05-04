@@ -24,17 +24,17 @@ public class IntegrationItemMap : IEntityTypeConfiguration<IntegrationItem>
 
         builder.Property(x => x.Message);
 
-        if (ProviderDb.databaseProvider == DatabaseProvider.Oracle)
+        if (ProviderDb.LoggerDatabaseProvider == DatabaseProvider.Oracle)
         {
             builder.Property(x => x.ErrorMessage)
                 .HasColumnType("CLOB");
         }
-        else if (ProviderDb.databaseProvider == DatabaseProvider.SqlServer)
+        else if (ProviderDb.LoggerDatabaseProvider == DatabaseProvider.SqlServer)
         {
             builder.Property(x => x.ErrorMessage)
                 .HasColumnType("NVARCHAR(MAX)");
         }
-        else if (ProviderDb.databaseProvider == DatabaseProvider.PostgreSQL)
+        else if (ProviderDb.LoggerDatabaseProvider == DatabaseProvider.PostgreSQL)
         {
             builder.Property(x => x.ErrorMessage)
                 .HasColumnType("TEXT");

@@ -62,7 +62,7 @@ public static class IntegrationLoggerExtensions
             switch (provider)
             {
                 case DatabaseProvider.SqlServer:
-                    ProviderDb.databaseProvider = DatabaseProvider.SqlServer;
+                    ProviderDb.LoggerDatabaseProvider = DatabaseProvider.SqlServer;
                     services.AddDbContext<IntegrationLogContextSqlServer>((serviceProvider, options) =>
                     {
                         var config = serviceProvider.GetRequiredService<IntegrationLoggerConfiguration>();
@@ -70,7 +70,7 @@ public static class IntegrationLoggerExtensions
                     });
                     break;
                 case DatabaseProvider.PostgreSQL:
-                    ProviderDb.databaseProvider = DatabaseProvider.PostgreSQL;
+                    ProviderDb.LoggerDatabaseProvider = DatabaseProvider.PostgreSQL;
                     services.AddDbContext<IntegrationLogContextPostgreSQL>((serviceProvider, options) =>
                     {
                         var config = serviceProvider.GetRequiredService<IntegrationLoggerConfiguration>();
@@ -78,7 +78,7 @@ public static class IntegrationLoggerExtensions
                     });
                     break;
                 case DatabaseProvider.Oracle:
-                    ProviderDb.databaseProvider = DatabaseProvider.Oracle;
+                    ProviderDb.LoggerDatabaseProvider = DatabaseProvider.Oracle;
                     services.AddDbContext<IntegrationLogContextOracle>((serviceProvider, options) =>
                     {
                         var config = serviceProvider.GetRequiredService<IntegrationLoggerConfiguration>();

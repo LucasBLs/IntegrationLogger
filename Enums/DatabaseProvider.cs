@@ -10,5 +10,5 @@ public enum DatabaseProvider
 
 public class ProviderDb
 {
-    public static DatabaseProvider databaseProvider { get; set; }
+    public static DatabaseProvider LoggerDatabaseProvider { get; set; }
 }
