@@ -14,7 +14,6 @@
     <RepositoryUrl>https://github.com/LucasBLs/IntegrationLogger</RepositoryUrl>
     <PackageProjectUrl>https://github.com/LucasBLs/IntegrationLogger</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageIcon>icon.png</PackageIcon>
     <PackageTags>Logger,MongoDB,SqlServer,Oracle,Postgres</PackageTags>
     <Title>IntegratorLogger</Title>
     <Summary>Create Logs Package</Summary>
