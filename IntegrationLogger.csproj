@@ -4,6 +4,20 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <PackageId>IntegratorLogger</PackageId>
+    <Version>1.0.0</Version>
+    <License>MIT</License>
+    <Authors>Lucas Lemos</Authors>
+    <PackageDescription>Create Logs Package</PackageDescription>
+    <Description>Create Logs Package</Description>
+    <RepositoryUrl>https://github.com/LucasBLs/IntegrationLogger</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/LucasBLs/IntegrationLogger</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageTags>Logger,MongoDB,SqlServer,Oracle,Postgres</PackageTags>
+    <Title>IntegratorLogger</Title>
+    <Summary>Create Logs Package</Summary>
   </PropertyGroup>
 
   <ItemGroup>
