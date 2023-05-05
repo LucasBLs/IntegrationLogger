@@ -3,7 +3,7 @@ using IntegrationLogger.Enums;
 using IntegrationLogger.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace IntegrationLogger;
+namespace IntegrationLogger.Services.Integration;
 public static class IntegrationLogServiceFactory
 {
     public static IIntegrationLogService CreateIntegrationLogService(IntegrationLoggerConfiguration config, IServiceProvider serviceProvider)

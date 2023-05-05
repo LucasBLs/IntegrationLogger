@@ -5,7 +5,7 @@ using IntegrationLogger.Models;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
-namespace IntegrationLogger;
+namespace IntegrationLogger.Services.Integration;
 public class RelationalIntegrationLogService : IIntegrationLogService, IIntegrationLogQueryable
 {
     private readonly IntegrationLogContextBase _context;
@@ -67,8 +67,8 @@ public class RelationalIntegrationLogService : IIntegrationLogService, IIntegrat
             }),
             Timestamp = DateTimeOffset.UtcNow.ToLocalTime(),
         };
-        
-        if(item.ItemStatus == IntegrationStatus.Failed)
+
+        if (item.ItemStatus == IntegrationStatus.Failed)
         {
             detail.Status = IntegrationStatus.Failed;
             _context.IntegrationDetails?.Update(detail);

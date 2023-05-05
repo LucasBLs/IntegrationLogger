@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using Newtonsoft.Json;
 
-namespace IntegrationLogger;
+namespace IntegrationLogger.Services.Integration;
 public class MongoDBIntegrationLogService : IIntegrationLogService, IIntegrationLogQueryable
 {
     private readonly IMongoCollection<IntegrationLog> _integrationLogs;

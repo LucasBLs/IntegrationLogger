@@ -2,6 +2,8 @@
 using IntegrationLogger.Data;
 using IntegrationLogger.Enums;
 using IntegrationLogger.Interfaces;
+using IntegrationLogger.Services.ApiGateway;
+using IntegrationLogger.Services.Integration;
 using IntegrationLogger.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +43,10 @@ public static class IntegrationLoggerExtensions
         services.AddScoped(x => new RoleBasedAuthorizationFilter(roles));
         services.AddScoped(x => IntegrationLogServiceFactory.CreateIntegrationLogService(x.GetRequiredService<IntegrationLoggerConfiguration>(), x));
         services.AddScoped<MongoDBIntegrationLogService>();
+
+        services.AddScoped(x => ApiGatewayLogServiceFactory.CreateApiGatewayLogService(x.GetRequiredService<IntegrationLoggerConfiguration>(), x));
+        services.AddScoped<MongoDBApiGatewayLogService>();
+
         services.AddScoped(x => new RelationalIntegrationLogService(x.GetRequiredService<IntegrationLogContextBase>()));
         services.AddScoped(x => new RelationalIntegrationLogService(x.GetRequiredService<IntegrationLogContextSqlServer>()));
         services.AddScoped(x => new RelationalIntegrationLogService(x.GetRequiredService<IntegrationLogContextPostgreSQL>()));
