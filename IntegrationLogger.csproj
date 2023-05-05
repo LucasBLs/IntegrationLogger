@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
-    <PackageId>d8a14bd1-8847-47ae-a3f8-fc04bd3bb169-IntegratorLogger</PackageId>
+    <PackageId>IntegratorLogger</PackageId>
     <Version>1.0.0</Version>
     <License>MIT</License>
     <Authors>Lucas Lemos</Authors>
