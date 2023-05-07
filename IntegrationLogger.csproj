@@ -52,9 +52,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\MigrationOracle\" />
-    <Folder Include="Migrations\MigrationPostgreSQL\" />
-    <Folder Include="Migrations\MigrationSqlServer\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

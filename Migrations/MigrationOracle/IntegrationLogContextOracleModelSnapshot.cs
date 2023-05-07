@@ -17,10 +17,10 @@ namespace IntegrationLogger.Migrations.MigrationOracle
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("ProductVersion", "6.0.16")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("IntegrationLogger.Models.ApiGatewayDetail", b =>
                 {
@@ -31,15 +31,23 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                     b.Property<Guid>("ApiGatewayLogId")
                         .HasColumnType("RAW(16)");
 
-                    b.Property<string>("HeaderName")
+                    b.Property<string>("Content")
                         .HasColumnType("NVARCHAR2(2000)");
 
-                    b.Property<string>("HeaderValue")
+                    b.Property<string>("Message")
                         .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<DateTimeOffset>("Timestamp")
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ApiGatewayLogId");
+
+                    b.HasIndex("Timestamp");
 
                     b.ToTable("ApiGatewayDetail", (string)null);
                 });
@@ -57,7 +65,7 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                         .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("ProjectName")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("NVARCHAR2(450)");
 
                     b.Property<long?>("RequestDuration")
                         .HasColumnType("NUMBER(19)");
@@ -73,6 +81,14 @@ namespace IntegrationLogger.Migrations.MigrationOracle
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProjectName");
+
+                    b.HasIndex("RequestDuration");
+
+                    b.HasIndex("StatusCode");
+
+                    b.HasIndex("Timestamp");
+
                     b.ToTable("ApiGatewayLog", (string)null);
                 });
 
@@ -83,10 +99,7 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                         .HasColumnType("RAW(16)");
 
                     b.Property<string>("DetailIdentifier")
-                        .HasColumnType("NVARCHAR2(2000)");
-
-                    b.Property<string>("ErrorMessage")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("NVARCHAR2(450)");
 
                     b.Property<Guid>("IntegrationLogId")
                         .HasColumnType("RAW(16)");
@@ -102,6 +115,8 @@ namespace IntegrationLogger.Migrations.MigrationOracle
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DetailIdentifier");
+
                     b.HasIndex("IntegrationLogId");
 
                     b.HasIndex("Timestamp");
@@ -115,7 +130,7 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                         .ValueGeneratedOnAdd()
                         .HasColumnType("RAW(16)");
 
-                    b.Property<string>("ErrorMessage")
+                    b.Property<string>("Content")
                         .HasColumnType("CLOB");
 
                     b.Property<Guid>("IntegrationDetailId")
@@ -155,7 +170,7 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                         .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("IntegrationName")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("NVARCHAR2(450)");
 
                     b.Property<string>("Message")
                         .HasColumnType("NVARCHAR2(2000)");
@@ -167,6 +182,8 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                         .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IntegrationName");
 
                     b.HasIndex("Timestamp");
 

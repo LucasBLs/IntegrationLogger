@@ -31,15 +31,23 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                     b.Property<Guid>("ApiGatewayLogId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("HeaderName")
+                    b.Property<string>("Content")
                         .HasColumnType("text");
 
-                    b.Property<string>("HeaderValue")
+                    b.Property<string>("Message")
                         .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("Timestamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ApiGatewayLogId");
+
+                    b.HasIndex("Timestamp");
 
                     b.ToTable("ApiGatewayDetail", (string)null);
                 });
@@ -73,6 +81,14 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProjectName");
+
+                    b.HasIndex("RequestDuration");
+
+                    b.HasIndex("StatusCode");
+
+                    b.HasIndex("Timestamp");
+
                     b.ToTable("ApiGatewayLog", (string)null);
                 });
 
@@ -83,9 +99,6 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                         .HasColumnType("uuid");
 
                     b.Property<string>("DetailIdentifier")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ErrorMessage")
                         .HasColumnType("text");
 
                     b.Property<Guid>("IntegrationLogId")
@@ -102,6 +115,8 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DetailIdentifier");
+
                     b.HasIndex("IntegrationLogId");
 
                     b.HasIndex("Timestamp");
@@ -115,7 +130,7 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ErrorMessage")
+                    b.Property<string>("Content")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("IntegrationDetailId")
@@ -167,6 +182,8 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IntegrationName");
 
                     b.HasIndex("Timestamp");
 

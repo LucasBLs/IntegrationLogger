@@ -26,5 +26,6 @@ public class IntegrationLogMap : IEntityTypeConfiguration<IntegrationLog>
            .HasForeignKey(x => x.IntegrationLogId);
 
         builder.HasIndex(x => x.Timestamp);
+        builder.HasIndex(x => x.IntegrationName);
     }
 }

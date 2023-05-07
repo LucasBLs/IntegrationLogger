@@ -74,8 +74,6 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <td><b>ActionType</b></td>
-                    <td><b>EntityName</b></td>
                     <td><b>Status</b></td>
                     <td><b>Identificador</b></td>
                     <td><b>Message</b></td>
@@ -89,8 +87,6 @@
                     string modalLogItem = $"#ModalItem{count++}";
                     string TableClass = ((IDictionary<Guid, bool>)ViewData["ErrorStatusDict"]!)[log.Id] ? "table-danger" : "table-success";
                     <tr class="@TableClass">
-                        <td>@log.ActionType</td>
-                        <td>@log.EntityName</td>
                         <td>@log.Status</td>
                         <td>@log.DetailIdentifier</td>
                         <td>@log.Message</td>

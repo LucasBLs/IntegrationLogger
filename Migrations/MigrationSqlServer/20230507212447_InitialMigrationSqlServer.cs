@@ -5,10 +5,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace IntegrationLogger.Migrations.MigrationSqlServer
 {
-    /// <inheritdoc />
     public partial class InitialMigrationSqlServer : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -16,7 +14,7 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProjectName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProjectName = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     RequestPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     HttpMethod = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ClientIp = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -34,7 +32,7 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IntegrationName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IntegrationName = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ExternalSystem = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SourceSystem = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -50,8 +48,10 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    HeaderName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    HeaderValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Timestamp = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     ApiGatewayLogId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -71,9 +71,8 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    DetailIdentifier = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DetailIdentifier = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ErrorMessage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Timestamp = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     IntegrationLogId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -97,7 +96,7 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                     ItemIdentifier = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ItemStatus = table.Column<int>(type: "int", nullable: false),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ErrorMessage = table.Column<string>(type: "NVARCHAR(MAX)", nullable: true),
+                    Content = table.Column<string>(type: "NVARCHAR(MAX)", nullable: true),
                     Timestamp = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     IntegrationDetailId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -116,6 +115,36 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                 name: "IX_ApiGatewayDetail_ApiGatewayLogId",
                 table: "ApiGatewayDetail",
                 column: "ApiGatewayLogId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApiGatewayDetail_Timestamp",
+                table: "ApiGatewayDetail",
+                column: "Timestamp");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApiGatewayLog_ProjectName",
+                table: "ApiGatewayLog",
+                column: "ProjectName");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApiGatewayLog_RequestDuration",
+                table: "ApiGatewayLog",
+                column: "RequestDuration");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApiGatewayLog_StatusCode",
+                table: "ApiGatewayLog",
+                column: "StatusCode");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApiGatewayLog_Timestamp",
+                table: "ApiGatewayLog",
+                column: "Timestamp");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_IntegrationDetail_DetailIdentifier",
+                table: "IntegrationDetail",
+                column: "DetailIdentifier");
 
             migrationBuilder.CreateIndex(
                 name: "IX_IntegrationDetail_IntegrationLogId",
@@ -138,12 +167,16 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                 column: "Timestamp");
 
             migrationBuilder.CreateIndex(
+                name: "IX_IntegrationLog_IntegrationName",
+                table: "IntegrationLog",
+                column: "IntegrationName");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_IntegrationLog_Timestamp",
                 table: "IntegrationLog",
                 column: "Timestamp");
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

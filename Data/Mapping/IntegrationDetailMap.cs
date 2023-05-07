@@ -16,22 +16,19 @@ public class IntegrationDetailMap : IEntityTypeConfiguration<IntegrationDetail>
         builder.Property(x => x.Id)
             .IsRequired();
 
-        //builder.Property(x => x.ActionType)
-        //    .HasConversion(new EnumToNumberConverter<ActionType, int>());
-
-        //builder.Property(x => x.EntityName);
+        builder.Property(x => x.DetailIdentifier);
 
         builder.Property(x => x.Status)
             .HasConversion(new EnumToNumberConverter<IntegrationStatus, int>());
 
         builder.Property(x => x.Message);
-        builder.Property(x => x.ErrorMessage);
         builder.Property(x => x.IntegrationLogId);
-
         builder.HasMany(x => x.Items)
             .WithOne(x => x.IntegrationDetail)
             .HasForeignKey(x => x.IntegrationDetailId);
 
         builder.HasIndex(x => x.Timestamp);
+        builder.HasIndex(x => x.IntegrationLogId);
+        builder.HasIndex(x => x.DetailIdentifier);
     }
 }

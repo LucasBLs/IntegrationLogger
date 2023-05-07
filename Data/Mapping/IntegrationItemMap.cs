@@ -26,17 +26,17 @@ public class IntegrationItemMap : IEntityTypeConfiguration<IntegrationItem>
 
         if (ProviderDb.LoggerDatabaseProvider == DatabaseProvider.Oracle)
         {
-            builder.Property(x => x.ErrorMessage)
+            builder.Property(x => x.Content)
                 .HasColumnType("CLOB");
         }
         else if (ProviderDb.LoggerDatabaseProvider == DatabaseProvider.SqlServer)
         {
-            builder.Property(x => x.ErrorMessage)
+            builder.Property(x => x.Content)
                 .HasColumnType("NVARCHAR(MAX)");
         }
         else if (ProviderDb.LoggerDatabaseProvider == DatabaseProvider.PostgreSQL)
         {
-            builder.Property(x => x.ErrorMessage)
+            builder.Property(x => x.Content)
                 .HasColumnType("TEXT");
         }
 
@@ -44,5 +44,6 @@ public class IntegrationItemMap : IEntityTypeConfiguration<IntegrationItem>
         builder.Property(x => x.IntegrationDetailId);
 
         builder.HasIndex(x => x.Timestamp);
+        builder.HasIndex(x => x.IntegrationDetailId);
     }
 }

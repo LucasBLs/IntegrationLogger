@@ -13,7 +13,7 @@ public class IntegrationItem
     public string? ItemIdentifier { get; set; }
     public IntegrationStatus ItemStatus { get; set; }
     public string? Message { get; set; }
-    public string? ErrorMessage { get; set; } = string.Empty;
+    public string? Content { get; set; } = string.Empty;
     [BsonRepresentation(BsonType.String)]
     public DateTimeOffset Timestamp { get; set; }
     [BsonRepresentation(BsonType.String)]

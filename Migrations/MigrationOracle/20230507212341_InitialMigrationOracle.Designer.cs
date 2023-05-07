@@ -5,43 +5,51 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using Oracle.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
-namespace IntegrationLogger.Migrations.MigrationPostgreSQL
+namespace IntegrationLogger.Migrations.MigrationOracle
 {
-    [DbContext(typeof(IntegrationLogContextPostgreSQL))]
-    [Migration("20230504210925_InitialMigrationPostgreSQL")]
-    partial class InitialMigrationPostgreSQL
+    [DbContext(typeof(IntegrationLogContextOracle))]
+    [Migration("20230507212341_InitialMigrationOracle")]
+    partial class InitialMigrationOracle
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "6.0.16")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("IntegrationLogger.Models.ApiGatewayDetail", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ApiGatewayLogId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
-                    b.Property<string>("HeaderName")
-                        .HasColumnType("text");
+                    b.Property<string>("Content")
+                        .HasColumnType("NVARCHAR2(2000)");
 
-                    b.Property<string>("HeaderValue")
-                        .HasColumnType("text");
+                    b.Property<string>("Message")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<DateTimeOffset>("Timestamp")
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ApiGatewayLogId");
+
+                    b.HasIndex("Timestamp");
 
                     b.ToTable("ApiGatewayDetail", (string)null);
                 });
@@ -50,30 +58,38 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ClientIp")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("HttpMethod")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("ProjectName")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(450)");
 
                     b.Property<long?>("RequestDuration")
-                        .HasColumnType("bigint");
+                        .HasColumnType("NUMBER(19)");
 
                     b.Property<string>("RequestPath")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int?>("StatusCode")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<DateTimeOffset>("Timestamp")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProjectName");
+
+                    b.HasIndex("RequestDuration");
+
+                    b.HasIndex("StatusCode");
+
+                    b.HasIndex("Timestamp");
 
                     b.ToTable("ApiGatewayLog", (string)null);
                 });
@@ -82,27 +98,26 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("DetailIdentifier")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ErrorMessage")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(450)");
 
                     b.Property<Guid>("IntegrationLogId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Message")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int>("Status")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<DateTimeOffset>("Timestamp")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DetailIdentifier");
 
                     b.HasIndex("IntegrationLogId");
 
@@ -115,28 +130,28 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
-                    b.Property<string>("ErrorMessage")
-                        .HasColumnType("TEXT");
+                    b.Property<string>("Content")
+                        .HasColumnType("CLOB");
 
                     b.Property<Guid>("IntegrationDetailId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ItemIdentifier")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int>("ItemStatus")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("ItemType")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Message")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTimeOffset>("Timestamp")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
 
                     b.HasKey("Id");
 
@@ -151,24 +166,26 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ExternalSystem")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("IntegrationName")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(450)");
 
                     b.Property<string>("Message")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("SourceSystem")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTimeOffset>("Timestamp")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IntegrationName");
 
                     b.HasIndex("Timestamp");
 

@@ -17,10 +17,10 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("ProductVersion", "6.0.16")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("IntegrationLogger.Models.ApiGatewayDetail", b =>
                 {
@@ -31,15 +31,23 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                     b.Property<Guid>("ApiGatewayLogId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("HeaderName")
+                    b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("HeaderValue")
+                    b.Property<string>("Message")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("Timestamp")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ApiGatewayLogId");
+
+                    b.HasIndex("Timestamp");
 
                     b.ToTable("ApiGatewayDetail", (string)null);
                 });
@@ -57,7 +65,7 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProjectName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<long?>("RequestDuration")
                         .HasColumnType("bigint");
@@ -73,6 +81,14 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProjectName");
+
+                    b.HasIndex("RequestDuration");
+
+                    b.HasIndex("StatusCode");
+
+                    b.HasIndex("Timestamp");
+
                     b.ToTable("ApiGatewayLog", (string)null);
                 });
 
@@ -83,10 +99,7 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("DetailIdentifier")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ErrorMessage")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<Guid>("IntegrationLogId")
                         .HasColumnType("uniqueidentifier");
@@ -102,6 +115,8 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DetailIdentifier");
+
                     b.HasIndex("IntegrationLogId");
 
                     b.HasIndex("Timestamp");
@@ -115,7 +130,7 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ErrorMessage")
+                    b.Property<string>("Content")
                         .HasColumnType("NVARCHAR(MAX)");
 
                     b.Property<Guid>("IntegrationDetailId")
@@ -155,7 +170,7 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("IntegrationName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Message")
                         .HasColumnType("nvarchar(max)");
@@ -167,6 +182,8 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                         .HasColumnType("datetimeoffset");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IntegrationName");
 
                     b.HasIndex("Timestamp");
 

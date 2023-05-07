@@ -25,5 +25,8 @@ public class ApiGatewayDetailMap : IEntityTypeConfiguration<ApiGatewayDetail>
         builder.Property(x => x.Content);
 
         builder.Property(x => x.ApiGatewayLogId);
+
+        builder.HasIndex(x => x.Timestamp);
+        builder.HasIndex(x => x.ApiGatewayLogId);
     }
 }

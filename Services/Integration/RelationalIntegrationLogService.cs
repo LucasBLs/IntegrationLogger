@@ -34,7 +34,7 @@ public class RelationalIntegrationLogService : IIntegrationLogService, IIntegrat
         _context.SaveChanges();
         return log;
     }
-    public IntegrationDetail AddDetail(IntegrationLog log, IntegrationStatus status, string detailIdentifier, string? message, string? errorMessage)
+    public IntegrationDetail AddDetail(IntegrationLog log, IntegrationStatus status, string detailIdentifier, string? message)
     {
         IntegrationDetail detail = new()
         {
@@ -42,7 +42,6 @@ public class RelationalIntegrationLogService : IIntegrationLogService, IIntegrat
             Status = status,
             DetailIdentifier = detailIdentifier,
             Message = message,
-            ErrorMessage = errorMessage,
             Timestamp = DateTimeOffset.UtcNow.ToLocalTime(),
             Items = new List<IntegrationItem>(),
         };
@@ -52,7 +51,7 @@ public class RelationalIntegrationLogService : IIntegrationLogService, IIntegrat
         _context.SaveChanges();
         return detail;
     }
-    public IntegrationItem AddItem(IntegrationDetail detail, ItemType itemType, string itemIdentifier, IntegrationStatus itemStatus, string? message, object? errorMessage)
+    public IntegrationItem AddItem(IntegrationDetail detail, ItemType itemType, string itemIdentifier, IntegrationStatus itemStatus, string? message, object? content)
     {
         IntegrationItem item = new()
         {
@@ -61,7 +60,7 @@ public class RelationalIntegrationLogService : IIntegrationLogService, IIntegrat
             ItemIdentifier = itemIdentifier,
             ItemStatus = itemStatus,
             Message = message,
-            ErrorMessage = JsonConvert.SerializeObject(errorMessage, Formatting.Indented, new JsonSerializerSettings()
+            Content = JsonConvert.SerializeObject(content, Formatting.Indented, new JsonSerializerSettings()
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             }),

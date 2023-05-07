@@ -32,5 +32,10 @@ public class ApiGatewayLogMap : IEntityTypeConfiguration<ApiGatewayLog>
             .WithOne(x => x.ApiGatewayLog)
             .HasForeignKey(x => x.ApiGatewayLogId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(x => x.ProjectName);
+        builder.HasIndex(x => x.Timestamp);
+        builder.HasIndex(x => x.StatusCode);
+        builder.HasIndex(x => x.RequestDuration);
     }
 }
