@@ -12,7 +12,7 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace IntegrationLogger.Migrations.MigrationOracle
 {
     [DbContext(typeof(IntegrationLogContextOracle))]
-    [Migration("20230507212341_InitialMigrationOracle")]
+    [Migration("20230508000654_InitialMigrationOracle")]
     partial class InitialMigrationOracle
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,6 +50,8 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                     b.HasIndex("ApiGatewayLogId");
 
                     b.HasIndex("Timestamp");
+
+                    b.HasIndex("ApiGatewayLogId", "Timestamp");
 
                     b.ToTable("ApiGatewayDetail", (string)null);
                 });
@@ -91,6 +93,8 @@ namespace IntegrationLogger.Migrations.MigrationOracle
 
                     b.HasIndex("Timestamp");
 
+                    b.HasIndex("ProjectName", "Timestamp");
+
                     b.ToTable("ApiGatewayLog", (string)null);
                 });
 
@@ -122,6 +126,10 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                     b.HasIndex("IntegrationLogId");
 
                     b.HasIndex("Timestamp");
+
+                    b.HasIndex("Timestamp", "IntegrationLogId");
+
+                    b.HasIndex("Timestamp", "IntegrationLogId", "DetailIdentifier");
 
                     b.ToTable("IntegrationDetail", (string)null);
                 });
@@ -159,6 +167,8 @@ namespace IntegrationLogger.Migrations.MigrationOracle
 
                     b.HasIndex("Timestamp");
 
+                    b.HasIndex("Timestamp", "IntegrationDetailId");
+
                     b.ToTable("IntegrationItem", (string)null);
                 });
 
@@ -188,6 +198,8 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                     b.HasIndex("IntegrationName");
 
                     b.HasIndex("Timestamp");
+
+                    b.HasIndex("Timestamp", "IntegrationName");
 
                     b.ToTable("IntegrationLog", (string)null);
                 });

@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace IntegrationLogger.Migrations.MigrationPostgreSQL
+namespace IntegrationLogger.Migrations.MigrationOracle
 {
-    public partial class InitialMigrationPostgreSQL : Migration
+    public partial class InitialMigrationOracle : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,14 +13,14 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                 name: "ApiGatewayLog",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ProjectName = table.Column<string>(type: "text", nullable: true),
-                    RequestPath = table.Column<string>(type: "text", nullable: true),
-                    HttpMethod = table.Column<string>(type: "text", nullable: true),
-                    ClientIp = table.Column<string>(type: "text", nullable: true),
-                    StatusCode = table.Column<int>(type: "integer", nullable: true),
-                    RequestDuration = table.Column<long>(type: "bigint", nullable: true),
-                    Timestamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    Id = table.Column<Guid>(type: "RAW(16)", nullable: false),
+                    ProjectName = table.Column<string>(type: "NVARCHAR2(450)", nullable: true),
+                    RequestPath = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    HttpMethod = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    ClientIp = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    StatusCode = table.Column<int>(type: "NUMBER(10)", nullable: true),
+                    RequestDuration = table.Column<long>(type: "NUMBER(19)", nullable: true),
+                    Timestamp = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -31,12 +31,12 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                 name: "IntegrationLog",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    IntegrationName = table.Column<string>(type: "text", nullable: true),
-                    Message = table.Column<string>(type: "text", nullable: true),
-                    ExternalSystem = table.Column<string>(type: "text", nullable: true),
-                    SourceSystem = table.Column<string>(type: "text", nullable: true),
-                    Timestamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    Id = table.Column<Guid>(type: "RAW(16)", nullable: false),
+                    IntegrationName = table.Column<string>(type: "NVARCHAR2(450)", nullable: true),
+                    Message = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    ExternalSystem = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    SourceSystem = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    Timestamp = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -47,12 +47,12 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                 name: "ApiGatewayDetail",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Type = table.Column<int>(type: "integer", nullable: false),
-                    Message = table.Column<string>(type: "text", nullable: true),
-                    Content = table.Column<string>(type: "text", nullable: true),
-                    Timestamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    ApiGatewayLogId = table.Column<Guid>(type: "uuid", nullable: false)
+                    Id = table.Column<Guid>(type: "RAW(16)", nullable: false),
+                    Type = table.Column<int>(type: "NUMBER(10)", nullable: false),
+                    Message = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    Content = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    Timestamp = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: false),
+                    ApiGatewayLogId = table.Column<Guid>(type: "RAW(16)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -69,12 +69,12 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                 name: "IntegrationDetail",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    DetailIdentifier = table.Column<string>(type: "text", nullable: true),
-                    Message = table.Column<string>(type: "text", nullable: true),
-                    Timestamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    IntegrationLogId = table.Column<Guid>(type: "uuid", nullable: false)
+                    Id = table.Column<Guid>(type: "RAW(16)", nullable: false),
+                    Status = table.Column<int>(type: "NUMBER(10)", nullable: false),
+                    DetailIdentifier = table.Column<string>(type: "NVARCHAR2(450)", nullable: true),
+                    Message = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    Timestamp = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: false),
+                    IntegrationLogId = table.Column<Guid>(type: "RAW(16)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -91,14 +91,14 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                 name: "IntegrationItem",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ItemType = table.Column<int>(type: "integer", nullable: false),
-                    ItemIdentifier = table.Column<string>(type: "text", nullable: true),
-                    ItemStatus = table.Column<int>(type: "integer", nullable: false),
-                    Message = table.Column<string>(type: "text", nullable: true),
-                    Content = table.Column<string>(type: "TEXT", nullable: true),
-                    Timestamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    IntegrationDetailId = table.Column<Guid>(type: "uuid", nullable: false)
+                    Id = table.Column<Guid>(type: "RAW(16)", nullable: false),
+                    ItemType = table.Column<int>(type: "NUMBER(10)", nullable: false),
+                    ItemIdentifier = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    ItemStatus = table.Column<int>(type: "NUMBER(10)", nullable: false),
+                    Message = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    Content = table.Column<string>(type: "CLOB", nullable: true),
+                    Timestamp = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: false),
+                    IntegrationDetailId = table.Column<Guid>(type: "RAW(16)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -117,6 +117,11 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                 column: "ApiGatewayLogId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ApiGatewayDetail_ApiGatewayLogId_Timestamp",
+                table: "ApiGatewayDetail",
+                columns: new[] { "ApiGatewayLogId", "Timestamp" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ApiGatewayDetail_Timestamp",
                 table: "ApiGatewayDetail",
                 column: "Timestamp");
@@ -125,6 +130,11 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                 name: "IX_ApiGatewayLog_ProjectName",
                 table: "ApiGatewayLog",
                 column: "ProjectName");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApiGatewayLog_ProjectName_Timestamp",
+                table: "ApiGatewayLog",
+                columns: new[] { "ProjectName", "Timestamp" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiGatewayLog_RequestDuration",
@@ -157,6 +167,16 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                 column: "Timestamp");
 
             migrationBuilder.CreateIndex(
+                name: "IX_IntegrationDetail_Timestamp_IntegrationLogId",
+                table: "IntegrationDetail",
+                columns: new[] { "Timestamp", "IntegrationLogId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_IntegrationDetail_Timestamp_IntegrationLogId_DetailIdentifier",
+                table: "IntegrationDetail",
+                columns: new[] { "Timestamp", "IntegrationLogId", "DetailIdentifier" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_IntegrationItem_IntegrationDetailId",
                 table: "IntegrationItem",
                 column: "IntegrationDetailId");
@@ -167,6 +187,11 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                 column: "Timestamp");
 
             migrationBuilder.CreateIndex(
+                name: "IX_IntegrationItem_Timestamp_IntegrationDetailId",
+                table: "IntegrationItem",
+                columns: new[] { "Timestamp", "IntegrationDetailId" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_IntegrationLog_IntegrationName",
                 table: "IntegrationLog",
                 column: "IntegrationName");
@@ -175,6 +200,11 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                 name: "IX_IntegrationLog_Timestamp",
                 table: "IntegrationLog",
                 column: "Timestamp");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_IntegrationLog_Timestamp_IntegrationName",
+                table: "IntegrationLog",
+                columns: new[] { "Timestamp", "IntegrationName" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

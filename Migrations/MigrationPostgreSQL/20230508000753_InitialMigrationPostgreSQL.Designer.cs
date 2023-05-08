@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace IntegrationLogger.Migrations.MigrationPostgreSQL
 {
     [DbContext(typeof(IntegrationLogContextPostgreSQL))]
-    [Migration("20230507212513_InitialMigrationPostgreSQL")]
+    [Migration("20230508000753_InitialMigrationPostgreSQL")]
     partial class InitialMigrationPostgreSQL
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,6 +50,8 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                     b.HasIndex("ApiGatewayLogId");
 
                     b.HasIndex("Timestamp");
+
+                    b.HasIndex("ApiGatewayLogId", "Timestamp");
 
                     b.ToTable("ApiGatewayDetail", (string)null);
                 });
@@ -91,6 +93,8 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
 
                     b.HasIndex("Timestamp");
 
+                    b.HasIndex("ProjectName", "Timestamp");
+
                     b.ToTable("ApiGatewayLog", (string)null);
                 });
 
@@ -122,6 +126,10 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                     b.HasIndex("IntegrationLogId");
 
                     b.HasIndex("Timestamp");
+
+                    b.HasIndex("Timestamp", "IntegrationLogId");
+
+                    b.HasIndex("Timestamp", "IntegrationLogId", "DetailIdentifier");
 
                     b.ToTable("IntegrationDetail", (string)null);
                 });
@@ -159,6 +167,8 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
 
                     b.HasIndex("Timestamp");
 
+                    b.HasIndex("Timestamp", "IntegrationDetailId");
+
                     b.ToTable("IntegrationItem", (string)null);
                 });
 
@@ -188,6 +198,8 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                     b.HasIndex("IntegrationName");
 
                     b.HasIndex("Timestamp");
+
+                    b.HasIndex("Timestamp", "IntegrationName");
 
                     b.ToTable("IntegrationLog", (string)null);
                 });

@@ -30,5 +30,7 @@ public class IntegrationDetailMap : IEntityTypeConfiguration<IntegrationDetail>
         builder.HasIndex(x => x.Timestamp);
         builder.HasIndex(x => x.IntegrationLogId);
         builder.HasIndex(x => x.DetailIdentifier);
+        builder.HasIndex(x => new { x.Timestamp, x.IntegrationLogId });
+        builder.HasIndex(x => new { x.Timestamp, x.IntegrationLogId, x.DetailIdentifier });
     }
 }

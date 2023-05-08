@@ -37,5 +37,6 @@ public class ApiGatewayLogMap : IEntityTypeConfiguration<ApiGatewayLog>
         builder.HasIndex(x => x.Timestamp);
         builder.HasIndex(x => x.StatusCode);
         builder.HasIndex(x => x.RequestDuration);
+        builder.HasIndex(x => new { x.ProjectName, x.Timestamp });
     }
 }

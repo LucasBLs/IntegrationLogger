@@ -27,5 +27,6 @@ public class IntegrationLogMap : IEntityTypeConfiguration<IntegrationLog>
 
         builder.HasIndex(x => x.Timestamp);
         builder.HasIndex(x => x.IntegrationName);
+        builder.HasIndex(x => new { x.Timestamp, x.IntegrationName });
     }
 }

@@ -45,5 +45,6 @@ public class IntegrationItemMap : IEntityTypeConfiguration<IntegrationItem>
 
         builder.HasIndex(x => x.Timestamp);
         builder.HasIndex(x => x.IntegrationDetailId);
+        builder.HasIndex(x => new { x.Timestamp, x.IntegrationDetailId });
     }
 }
