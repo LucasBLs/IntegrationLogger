@@ -1,5 +1,9 @@
 using IntegrationLogger.Data.Mapping;
+using IntegrationLogger.Data.Mapping.ApiGateway;
+using IntegrationLogger.Data.Mapping.Integration;
 using IntegrationLogger.Models;
+using IntegrationLogger.Models.ApiGateway;
+using IntegrationLogger.Models.Integration;
 using Microsoft.EntityFrameworkCore;
 
 namespace IntegrationLogger.Data;
@@ -16,6 +20,8 @@ public abstract class IntegrationLogContextBase : DbContext
     public DbSet<ApiGatewayLog> ApiGatewayLogs { get; set; } = default!;
     public DbSet<ApiGatewayDetail> ApiGatewayDetails { get; set; } = default!;
 
+    public DbSet<LogConfiguration> LogConfigurations { get; set; } = default!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new IntegrationLogMap());
@@ -24,6 +30,8 @@ public abstract class IntegrationLogContextBase : DbContext
 
         modelBuilder.ApplyConfiguration(new ApiGatewayLogMap());
         modelBuilder.ApplyConfiguration(new ApiGatewayDetailMap());
+
+        modelBuilder.ApplyConfiguration(new LogConfigurationMap());
     }
 }
 

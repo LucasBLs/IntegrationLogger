@@ -1,15 +1,13 @@
 ﻿using IntegrationLogger.Configuration;
 using IntegrationLogger.Data;
 using IntegrationLogger.Enums;
-using IntegrationLogger.Interfaces;
-using IntegrationLogger.Services.ApiGateway;
-using IntegrationLogger.Services.Integration;
+using IntegrationLogger.Repositories.ApiGateway;
+using IntegrationLogger.Repositories.Integration;
+using IntegrationLogger.Repositories.Interfaces;
 using IntegrationLogger.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
-using System.Reflection;
 
 namespace IntegrationLogger.Extensions;
 public static class IntegrationLoggerExtensions
@@ -41,24 +39,24 @@ public static class IntegrationLoggerExtensions
         });
 
         services.AddScoped(x => new RoleBasedAuthorizationFilter(roles));
-        services.AddScoped(x => IntegrationLogServiceFactory.CreateIntegrationLogService(x.GetRequiredService<IntegrationLoggerConfiguration>(), x));
-        services.AddScoped<MongoDBIntegrationLogService>();
 
-        services.AddScoped(x => ApiGatewayLogServiceFactory.CreateApiGatewayLogService(x.GetRequiredService<IntegrationLoggerConfiguration>(), x));
-        services.AddScoped<MongoDBApiGatewayLogService>();
+        services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextBase>()));
+        services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextSqlServer>()));
+        services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextPostgreSQL>()));
+        services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextOracle>()));
 
-        services.AddScoped(x => new RelationalIntegrationLogService(x.GetRequiredService<IntegrationLogContextBase>()));
-        services.AddScoped(x => new RelationalIntegrationLogService(x.GetRequiredService<IntegrationLogContextSqlServer>()));
-        services.AddScoped(x => new RelationalIntegrationLogService(x.GetRequiredService<IntegrationLogContextPostgreSQL>()));
-        services.AddScoped(x => new RelationalIntegrationLogService(x.GetRequiredService<IntegrationLogContextOracle>()));
-
-        services.AddScoped<IIntegrationLogQueryable>(x =>
+        services.AddScoped<IIntegrationLogRepository>(serviceProvider =>
         {
-            if (x.GetRequiredService<IntegrationLoggerConfiguration>().Provider == DatabaseProvider.MongoDB)
+            var config = serviceProvider.GetRequiredService<IntegrationLoggerConfiguration>();
+
+            if (config.Provider == DatabaseProvider.MongoDB)
             {
-                return x.GetRequiredService<MongoDBIntegrationLogService>();
+                return serviceProvider.GetRequiredService<MongoDBIntegrationLogRepository>();
             }
-            return x.GetRequiredService<RelationalIntegrationLogService>();
+            else
+            {
+                return serviceProvider.GetRequiredService<RelationalIntegrationLogRepository>();
+            }
         });
 
         services.AddHostedService<MigrateDatabaseHostedService>();
@@ -96,19 +94,35 @@ public static class IntegrationLoggerExtensions
             }
         }
 
+        services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Integration Logger API", Version = "v1" });
+            c.CustomSchemaIds(type => type.FullName);
+        });
+
         services.AddIntegrationLogger();
-        services.AddControllersWithViews().AddRazorRuntimeCompilation();
+        services.AddControllers();
 
         return services;
     }
 
     public static IApplicationBuilder UseIntegrationLogger(this IApplicationBuilder app)
     {
-        app.UseStaticFiles(new StaticFileOptions
+        app.UseRouting();
+
+        // Adicione estas linhas para configurar o Swagger:
+        app.UseSwagger(c => c.RouteTemplate = "integration-logger-swagger/{documentName}/swagger.json");
+        app.UseSwaggerUI(c =>
         {
-            FileProvider = new EmbeddedFileProvider(Assembly.GetExecutingAssembly(), "IntegrationLogger.Views.wwwroot"),
-            RequestPath = ""
+            c.SwaggerEndpoint("/integration-logger-swagger/v1/swagger.json", "Integration Logger API v1");
+            c.RoutePrefix = "integration-logger-swagger";
         });
+
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+        });
+
         return app;
     }
 }

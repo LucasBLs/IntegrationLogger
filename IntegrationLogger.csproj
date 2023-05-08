@@ -20,17 +20,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Views\LogViewer\Index.cshtml" />
-    <None Remove="Views\LogViewer\LogDetail.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-	  <EmbeddedResource Include="Views\wwwroot\**\*" />
-	  <EmbeddedResource Include="Views\LogViewer\LogDetail.cshtml" />
-    <EmbeddedResource Include="Views\LogViewer\Index.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.16" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4">
       <PrivateAssets>all</PrivateAssets>
@@ -49,9 +38,11 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.8" />
     <PackageReference Include="Oracle.EntityFrameworkCore" Version="6.21.90" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Controllers\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 
