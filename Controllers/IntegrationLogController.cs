@@ -36,7 +36,7 @@ public class IntegrationLogController : ControllerBase
         }
         catch (Exception ex)
         {
-            var response = new ApiResponse<List<IntegrationLog>>(false, ex.Message, null, ex);
+            var response = new ApiResponse<List<IntegrationLog>>(false, ex.Message, null, ex.ToString());
             return StatusCode(500, response);
         }
     }
@@ -67,7 +67,7 @@ public class IntegrationLogController : ControllerBase
         }
         catch (Exception ex)
         {
-            var response = new ApiResponse<List<IntegrationDetail>>(false, ex.Message, null, ex);
+            var response = new ApiResponse<List<IntegrationDetail>>(false, ex.Message, null, ex.ToString());
             return StatusCode(500, response);
         }
     }
@@ -90,7 +90,7 @@ public class IntegrationLogController : ControllerBase
         }
         catch (Exception ex)
         {
-            var response = new ApiResponse<List<IntegrationItem>>(false, ex.Message, null, ex);
+            var response = new ApiResponse<List<IntegrationItem>>(false, ex.Message, null, ex.ToString());
             return StatusCode(500, response);
         }
     }

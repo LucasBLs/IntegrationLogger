@@ -1,9 +1,9 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace IntegrationLogger.Models.ApiGateway;
+namespace IntegrationLogger.Models.Gateway;
 
-public class ApiGatewayLog
+public class GatewayLog
 {
     [BsonId]
     [BsonRepresentation(BsonType.String)]
@@ -16,5 +16,5 @@ public class ApiGatewayLog
     public long? RequestDuration { get; set; } // Tempo de requisição em milissegundos
     [BsonRepresentation(BsonType.String)]
     public DateTimeOffset Timestamp { get; set; }
-    public ICollection<ApiGatewayDetail>? Details { get; set; }
+    public ICollection<GatewayDetail>? Details { get; set; }
 }

@@ -1,5 +1,6 @@
 using IntegrationLogger.Data;
 using IntegrationLogger.Enums;
+using IntegrationLogger.Extensions;
 using IntegrationLogger.Models.Integration;
 using IntegrationLogger.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -56,10 +57,7 @@ public class RelationalIntegrationLogRepository : IIntegrationLogRepository
             ItemIdentifier = itemIdentifier,
             ItemStatus = itemStatus,
             Message = message,
-            Content = JsonConvert.SerializeObject(content, Formatting.Indented, new JsonSerializerSettings()
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            }),
+            Content = content.SerializeIndentedObject(),
             Timestamp = DateTimeOffset.UtcNow.ToLocalTime(),
         };
 

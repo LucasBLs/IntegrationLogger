@@ -1,10 +1,10 @@
 ﻿using IntegrationLogger.Configuration;
 using IntegrationLogger.Enums;
+using IntegrationLogger.Extensions;
 using IntegrationLogger.Models.Integration;
 using IntegrationLogger.Repositories.Interfaces;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
-using Newtonsoft.Json;
 
 namespace IntegrationLogger.Repositories.Integration;
 public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
@@ -33,9 +33,12 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
         var compoundIndexKeys = indexKeysBuilder
                                     .Ascending(l => l.Timestamp)
                                     .Ascending(l => l.IntegrationName)
-                                    .Ascending(l => l.ExternalSystem)
-                                    .Ascending(l => l.SourceSystem);
-        var indexOptions = new CreateIndexOptions { Name = "CompoundIndex" };
+                                    .Ascending(l => new
+                                    {
+                                        l.Timestamp,
+                                        l.IntegrationName
+                                    });
+        var indexOptions = new CreateIndexOptions { Name = "IntegrationLogIndex" };
         _integrationLogs.Indexes.CreateOne(new CreateIndexModel<IntegrationLog>(compoundIndexKeys, indexOptions));
 
     }
@@ -43,18 +46,36 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
     {
         var indexKeysBuilder = Builders<IntegrationDetail>.IndexKeys;
         var integrationLogIdIndexKeys = indexKeysBuilder
+                                            .Ascending(i => i.Timestamp)
                                             .Ascending(d => d.IntegrationLogId)
-                                            .Ascending(i => i.Timestamp);
-        var indexOptions = new CreateIndexOptions { Name = "IntegrationLogIdIndex" };
+                                            .Ascending(x => x.DetailIdentifier)
+                                            .Ascending(o => new
+                                            {
+                                                o.Timestamp, 
+                                                o.IntegrationLogId
+                                            })
+                                            .Ascending(u => new
+                                            {
+                                                u.Timestamp,
+                                                u.IntegrationLogId,
+                                                u.DetailIdentifier
+                                            });
+        var indexOptions = new CreateIndexOptions { Name = "IntegrationDetailIndex" };
         _integrationDetails.Indexes.CreateOne(new CreateIndexModel<IntegrationDetail>(integrationLogIdIndexKeys, indexOptions));
     }
     private void CreateIntegrationItemIndexes()
     {
         var indexKeysBuilder = Builders<IntegrationItem>.IndexKeys;
         var integrationDetailIdIndexKeys = indexKeysBuilder
+                                            .Ascending(i => i.Timestamp)
                                             .Ascending(i => i.IntegrationDetailId)
-                                            .Ascending(i => i.Timestamp);
-        var indexOptions = new CreateIndexOptions { Name = "IntegrationDetailIdIndex" };
+                                            .Ascending(i => new
+                                            {
+                                                i.Timestamp, 
+                                                i.IntegrationDetailId
+                                            });
+                                         
+        var indexOptions = new CreateIndexOptions { Name = "IntegrationItemIndex" };
         _integrationItems.Indexes.CreateOne(new CreateIndexModel<IntegrationItem>(integrationDetailIdIndexKeys, indexOptions));
     }
 
@@ -97,10 +118,7 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
             ItemIdentifier = itemIdentifier,
             ItemStatus = itemStatus,
             Message = message,
-            Content = JsonConvert.SerializeObject(content, Formatting.Indented, new JsonSerializerSettings()
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            }),
+            Content = content.SerializeIndentedObject(),
             Timestamp = DateTimeOffset.UtcNow.ToLocalTime(),
         };
 
@@ -125,31 +143,21 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
         var query = _integrationLogs.AsQueryable();
 
         if (startDate != null && endDate != null)
-        {
             query = query.Where(l => l.Timestamp >= startDate && l.Timestamp <= endDate);
-        }
-
+        
         if (!string.IsNullOrEmpty(integrationName))
-        {
             query = query.Where(l => l.IntegrationName == integrationName);
-        }
-
+        
         if (!string.IsNullOrEmpty(externalSystem))
-        {
             query = query.Where(l => l.ExternalSystem == externalSystem);
-        }
 
         if (!string.IsNullOrEmpty(sourceSystem))
-        {
             query = query.Where(l => l.SourceSystem == sourceSystem);
-        }
-
+        
         if (groupByIntegrationName)
-        {
             query = query.GroupBy(log => log.IntegrationName)
                          .Select(group => group.OrderByDescending(log => log.Timestamp).First());
-        }
-
+        
         int totalCount = await query.CountAsync();
 
         if (pageSize > 0)

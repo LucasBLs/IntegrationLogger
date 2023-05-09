@@ -1,13 +1,14 @@
 ﻿using IntegrationLogger.Configuration;
 using IntegrationLogger.Data;
 using IntegrationLogger.Enums;
-using IntegrationLogger.Repositories.ApiGateway;
+using IntegrationLogger.Repositories.Gateway;
 using IntegrationLogger.Repositories.Integration;
 using IntegrationLogger.Repositories.Interfaces;
 using IntegrationLogger.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.Json.Serialization;
 
 namespace IntegrationLogger.Extensions;
 public static class IntegrationLoggerExtensions
@@ -40,10 +41,12 @@ public static class IntegrationLoggerExtensions
 
         services.AddScoped(x => new RoleBasedAuthorizationFilter(roles));
 
+        #region IntegrationLog
         services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextBase>()));
         services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextSqlServer>()));
         services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextPostgreSQL>()));
         services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextOracle>()));
+        services.AddScoped<MongoDBIntegrationLogRepository>();
 
         services.AddScoped<IIntegrationLogRepository>(serviceProvider =>
         {
@@ -58,6 +61,29 @@ public static class IntegrationLoggerExtensions
                 return serviceProvider.GetRequiredService<RelationalIntegrationLogRepository>();
             }
         });
+        #endregion
+
+        #region GatewayLog
+        services.AddScoped(x => new RelationalGatewayLogRepository(x.GetRequiredService<IntegrationLogContextBase>()));
+        services.AddScoped(x => new RelationalGatewayLogRepository(x.GetRequiredService<IntegrationLogContextSqlServer>()));
+        services.AddScoped(x => new RelationalGatewayLogRepository(x.GetRequiredService<IntegrationLogContextPostgreSQL>()));
+        services.AddScoped(x => new RelationalGatewayLogRepository(x.GetRequiredService<IntegrationLogContextOracle>()));
+        services.AddScoped<MongoDBGatewayLogRepository>();
+
+        services.AddScoped<IApiGatewayLogRepository>(serviceProvider =>
+        {
+            var config = serviceProvider.GetRequiredService<IntegrationLoggerConfiguration>();
+
+            if (config.Provider == DatabaseProvider.MongoDB)
+            {
+                return serviceProvider.GetRequiredService<MongoDBGatewayLogRepository>();
+            }
+            else
+            {
+                return serviceProvider.GetRequiredService<RelationalGatewayLogRepository>();
+            }
+        });
+        #endregion
 
         services.AddHostedService<MigrateDatabaseHostedService>();
 
@@ -101,7 +127,17 @@ public static class IntegrationLoggerExtensions
         });
 
         services.AddIntegrationLogger();
-        services.AddControllers();
+        services.AddControllers()
+        .ConfigureApiBehaviorOptions(options =>
+        {
+            options.SuppressModelStateInvalidFilter = true;
+        })
+        .AddJsonOptions(x =>
+        {
+            x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            x.JsonSerializerOptions.IgnoreReadOnlyFields = true;
+            x.JsonSerializerOptions.IgnoreReadOnlyProperties = true;
+        });
 
         return services;
     }
@@ -110,7 +146,6 @@ public static class IntegrationLoggerExtensions
     {
         app.UseRouting();
 
-        // Adicione estas linhas para configurar o Swagger:
         app.UseSwagger(c => c.RouteTemplate = "integration-logger-swagger/{documentName}/swagger.json");
         app.UseSwaggerUI(c =>
         {

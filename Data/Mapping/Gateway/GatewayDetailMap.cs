@@ -1,16 +1,16 @@
 using IntegrationLogger.Enums;
-using IntegrationLogger.Models.ApiGateway;
+using IntegrationLogger.Models.Gateway;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace IntegrationLogger.Data.Mapping.ApiGateway;
+namespace IntegrationLogger.Data.Mapping.Gateway;
 
-public class ApiGatewayDetailMap : IEntityTypeConfiguration<ApiGatewayDetail>
+public class GatewayDetailMap : IEntityTypeConfiguration<GatewayDetail>
 {
-    public void Configure(EntityTypeBuilder<ApiGatewayDetail> builder)
+    public void Configure(EntityTypeBuilder<GatewayDetail> builder)
     {
-        builder.ToTable(nameof(ApiGatewayDetail))
+        builder.ToTable(nameof(GatewayDetail))
             .HasKey(x => x.Id);
 
         builder.Property(x => x.Id);

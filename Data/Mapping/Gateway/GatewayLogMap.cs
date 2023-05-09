@@ -1,14 +1,14 @@
-using IntegrationLogger.Models.ApiGateway;
+using IntegrationLogger.Models.Gateway;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace IntegrationLogger.Data.Mapping.ApiGateway;
+namespace IntegrationLogger.Data.Mapping.Gateway;
 
-public class ApiGatewayLogMap : IEntityTypeConfiguration<ApiGatewayLog>
+public class GatewayLogMap : IEntityTypeConfiguration<GatewayLog>
 {
-    public void Configure(EntityTypeBuilder<ApiGatewayLog> builder)
+    public void Configure(EntityTypeBuilder<GatewayLog> builder)
     {
-        builder.ToTable(nameof(ApiGatewayLog))
+        builder.ToTable(nameof(GatewayLog))
             .HasKey(x => x.Id);
 
         builder.Property(x => x.Id)
