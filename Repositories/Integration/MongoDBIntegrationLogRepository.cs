@@ -58,7 +58,8 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
         _integrationItems.Indexes.CreateOne(new CreateIndexModel<IntegrationItem>(integrationDetailIdIndexKeys, indexOptions));
     }
 
-    public IntegrationLog Log(string integrationName, string message, string externalSystem, string sourceSystem)
+    #region AddLogs
+    public IntegrationLog AddLog(string integrationName, string message, string externalSystem, string sourceSystem)
     {
         IntegrationLog log = new()
         {
@@ -71,10 +72,6 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
 
         _integrationLogs.InsertOne(log);
         return log;
-    }
-    public IntegrationLog AddLog(string integrationName, string message, string externalSystem, string sourceSystem)
-    {
-        return Log(integrationName, message, externalSystem, sourceSystem);
     }
     public IntegrationDetail AddDetail(IntegrationLog log, IntegrationStatus status, string? detailIdentifier, string? message)
     {
@@ -120,7 +117,9 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
         _integrationItems.InsertOne(item);
         return item;
     }
+    #endregion
 
+    #region GetLogs
     public async Task<(List<IntegrationLog> logs, int totalCount)> GetLogs(DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, string? integrationName = null, string? externalSystem = null, string? sourceSystem = null, bool groupByIntegrationName = false, int pageIndex = 1, int pageSize = 0)
     {
         var query = _integrationLogs.AsQueryable();
@@ -160,15 +159,16 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
 
         return (details, totalCount);
     }
-    public async Task<(List<IntegrationDetail> details, int totalCount)> GetDetails(DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, string? detailIdentifier = null, bool filterWithIdentifier = true, string? integrationName = null, int pageIndex = 1, int pageSize = 0)
+    public async Task<(List<IntegrationDetail> details, int totalCount)> GetDetails(DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, string? detailIdentifier = null, bool filterWithIdentifier = true, string? integrationName = null, Guid? integrationLogId = null, int pageIndex = 1, int pageSize = 0)
     {
         var query = _integrationDetails.AsQueryable();
 
-        if (startDate != null && endDate != null)
-        {
-            query = query.Where(l => l.Timestamp >= startDate && l.Timestamp <= endDate);
-        }
+        if (integrationLogId != null)
+            query = query.Where(l => l.IntegrationLogId == integrationLogId);        
 
+        if (startDate != null && endDate != null)
+            query = query.Where(l => l.Timestamp >= startDate && l.Timestamp <= endDate);
+        
         if (!string.IsNullOrEmpty(detailIdentifier))
             query = query.Where(x => x.DetailIdentifier.ToLower().Contains(detailIdentifier.ToLower()));
 
@@ -187,14 +187,6 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
 
         return (details, totalCount);
     }
-
-    public async Task<List<IntegrationDetail>> GetDetailsByLogId(Guid logId)
-    {
-        return await _integrationDetails.AsQueryable()
-            .Where(d => d.IntegrationLogId == logId)
-            .OrderByDescending(x => x.Timestamp)
-            .ToListAsync();
-    }
     public async Task<List<IntegrationItem>> GetItemsByDetailId(Guid detailId)
     {
         return await _integrationItems.AsQueryable()
@@ -202,18 +194,5 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
             .OrderByDescending(x => x.Timestamp)
             .ToListAsync();
     }
-
-    public IQueryable<IntegrationLog> GetIntegrationLogs()
-    {
-        return _integrationLogs.AsQueryable();
-    }
-    public IQueryable<IntegrationDetail> GetIntegrationDetails()
-    {
-        return _integrationDetails.AsQueryable();
-    }
-    public IQueryable<IntegrationItem> GetIntegrationItems()
-    {
-        return _integrationItems.AsQueryable();
-    }
-
+    #endregion
 }

@@ -4,7 +4,6 @@ using IntegrationLogger.Models.Integration;
 using IntegrationLogger.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using System.Drawing.Printing;
 
 namespace IntegrationLogger.Repositories.Integration;
 public class RelationalIntegrationLogRepository : IIntegrationLogRepository
@@ -17,10 +16,6 @@ public class RelationalIntegrationLogRepository : IIntegrationLogRepository
 
     #region AddLogs
     public IntegrationLog AddLog(string integrationName, string message, string externalSystem, string sourceSystem)
-    {
-        return Log(integrationName, message, externalSystem, sourceSystem);
-    }
-    public IntegrationLog Log(string integrationName, string message, string externalSystem, string sourceSystem)
     {
         IntegrationLog log = new()
         {
@@ -108,9 +103,12 @@ public class RelationalIntegrationLogRepository : IIntegrationLogRepository
 
         return (logs, totalCount);
     }
-    public async Task<(List<IntegrationDetail> details, int totalCount)> GetDetails(DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, string? detailIdentifier = null, bool filterWithIdentifier = true, string? integrationName = null, int pageIndex = 1, int pageSize = 0)
+    public async Task<(List<IntegrationDetail> details, int totalCount)> GetDetails(DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, string? detailIdentifier = null, bool filterWithIdentifier = true, string? integrationName = null, Guid? integrationLogId = null, int pageIndex = 1, int pageSize = 0)
     {
         var query = _context.IntegrationDetails.AsNoTracking().AsQueryable();
+
+        if (integrationLogId != null)
+            query = query.Where(l => l.IntegrationLogId == integrationLogId);
 
         if (startDate != null && endDate != null)
             query = query.Where(l => l.Timestamp >= startDate && l.Timestamp <= endDate);
@@ -132,13 +130,6 @@ public class RelationalIntegrationLogRepository : IIntegrationLogRepository
         var details = await query.OrderByDescending(x => x.Timestamp).ToListAsync();
 
         return (details, totalCount);
-    }
-    public async Task<List<IntegrationDetail>> GetDetailsByLogId(Guid logId)
-    {
-        return await _context.IntegrationDetails.AsNoTracking()
-            .Where(d => d.IntegrationLogId == logId)
-            .OrderByDescending(x => x.Timestamp)
-            .ToListAsync();
     }
     public async Task<List<IntegrationItem>> GetItemsByDetailId(Guid detailId)
     {
