@@ -3,17 +3,17 @@ using System;
 using IntegrationLogger.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Oracle.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
-namespace IntegrationLogger.Migrations.MigrationSqlServer
+namespace IntegrationLogger.Migrations.MigrationOracle
 {
-    [DbContext(typeof(IntegrationLogContextSqlServer))]
-    [Migration("20230508000723_InitialMigrationSqlServer")]
-    partial class InitialMigrationSqlServer
+    [DbContext(typeof(IntegrationLogContextOracle))]
+    [Migration("20230509003516_InitialMigrationOracle")]
+    partial class InitialMigrationOracle
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -22,28 +22,28 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                 .HasAnnotation("ProductVersion", "6.0.16")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("IntegrationLogger.Models.ApiGatewayDetail", b =>
+            modelBuilder.Entity("IntegrationLogger.Models.ApiGateway.ApiGatewayDetail", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ApiGatewayLogId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Message")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTimeOffset>("Timestamp")
-                        .HasColumnType("datetimeoffset");
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
 
                     b.Property<int>("Type")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("Id");
 
@@ -56,32 +56,32 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                     b.ToTable("ApiGatewayDetail", (string)null);
                 });
 
-            modelBuilder.Entity("IntegrationLogger.Models.ApiGatewayLog", b =>
+            modelBuilder.Entity("IntegrationLogger.Models.ApiGateway.ApiGatewayLog", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ClientIp")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("HttpMethod")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("ProjectName")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("NVARCHAR2(450)");
 
                     b.Property<long?>("RequestDuration")
-                        .HasColumnType("bigint");
+                        .HasColumnType("NUMBER(19)");
 
                     b.Property<string>("RequestPath")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int?>("StatusCode")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<DateTimeOffset>("Timestamp")
-                        .HasColumnType("datetimeoffset");
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
 
                     b.HasKey("Id");
 
@@ -98,26 +98,26 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                     b.ToTable("ApiGatewayLog", (string)null);
                 });
 
-            modelBuilder.Entity("IntegrationLogger.Models.IntegrationDetail", b =>
+            modelBuilder.Entity("IntegrationLogger.Models.Integration.IntegrationDetail", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("DetailIdentifier")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("NVARCHAR2(450)");
 
                     b.Property<Guid>("IntegrationLogId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Message")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<DateTimeOffset>("Timestamp")
-                        .HasColumnType("datetimeoffset");
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
 
                     b.HasKey("Id");
 
@@ -134,32 +134,32 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                     b.ToTable("IntegrationDetail", (string)null);
                 });
 
-            modelBuilder.Entity("IntegrationLogger.Models.IntegrationItem", b =>
+            modelBuilder.Entity("IntegrationLogger.Models.Integration.IntegrationItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Content")
-                        .HasColumnType("NVARCHAR(MAX)");
+                        .HasColumnType("CLOB");
 
                     b.Property<Guid>("IntegrationDetailId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ItemIdentifier")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int>("ItemStatus")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("ItemType")
-                        .HasColumnType("int");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Message")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTimeOffset>("Timestamp")
-                        .HasColumnType("datetimeoffset");
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
 
                     b.HasKey("Id");
 
@@ -172,26 +172,26 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                     b.ToTable("IntegrationItem", (string)null);
                 });
 
-            modelBuilder.Entity("IntegrationLogger.Models.IntegrationLog", b =>
+            modelBuilder.Entity("IntegrationLogger.Models.Integration.IntegrationLog", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ExternalSystem")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("IntegrationName")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("NVARCHAR2(450)");
 
                     b.Property<string>("Message")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("SourceSystem")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTimeOffset>("Timestamp")
-                        .HasColumnType("datetimeoffset");
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
 
                     b.HasKey("Id");
 
@@ -204,9 +204,60 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                     b.ToTable("IntegrationLog", (string)null);
                 });
 
-            modelBuilder.Entity("IntegrationLogger.Models.ApiGatewayDetail", b =>
+            modelBuilder.Entity("IntegrationLogger.Models.LogConfiguration", b =>
                 {
-                    b.HasOne("IntegrationLogger.Models.ApiGatewayLog", "ApiGatewayLog")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<string>("ArchivePath")
+                        .HasMaxLength(100)
+                        .HasColumnType("NVARCHAR2(100)");
+
+                    b.Property<bool>("AutoArchive")
+                        .HasColumnType("NUMBER(1)");
+
+                    b.Property<string>("EmailHost")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<bool>("EmailNotification")
+                        .HasColumnType("NUMBER(1)");
+
+                    b.Property<string>("EmailPassword")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<int>("EmailPort")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<string>("EmailRecipients")
+                        .HasMaxLength(1000)
+                        .HasColumnType("NVARCHAR2(1000)");
+
+                    b.Property<bool>("EmailUseSSL")
+                        .HasColumnType("NUMBER(1)");
+
+                    b.Property<string>("EmailUsername")
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<int>("LogRetentionPeriod")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<string>("LogSource")
+                        .HasMaxLength(100)
+                        .HasColumnType("NVARCHAR2(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmailRecipients");
+
+                    b.HasIndex("LogSource");
+
+                    b.ToTable("LogConfiguration", (string)null);
+                });
+
+            modelBuilder.Entity("IntegrationLogger.Models.ApiGateway.ApiGatewayDetail", b =>
+                {
+                    b.HasOne("IntegrationLogger.Models.ApiGateway.ApiGatewayLog", "ApiGatewayLog")
                         .WithMany("Details")
                         .HasForeignKey("ApiGatewayLogId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -215,9 +266,9 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                     b.Navigation("ApiGatewayLog");
                 });
 
-            modelBuilder.Entity("IntegrationLogger.Models.IntegrationDetail", b =>
+            modelBuilder.Entity("IntegrationLogger.Models.Integration.IntegrationDetail", b =>
                 {
-                    b.HasOne("IntegrationLogger.Models.IntegrationLog", "IntegrationLog")
+                    b.HasOne("IntegrationLogger.Models.Integration.IntegrationLog", "IntegrationLog")
                         .WithMany("Details")
                         .HasForeignKey("IntegrationLogId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -226,9 +277,9 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                     b.Navigation("IntegrationLog");
                 });
 
-            modelBuilder.Entity("IntegrationLogger.Models.IntegrationItem", b =>
+            modelBuilder.Entity("IntegrationLogger.Models.Integration.IntegrationItem", b =>
                 {
-                    b.HasOne("IntegrationLogger.Models.IntegrationDetail", "IntegrationDetail")
+                    b.HasOne("IntegrationLogger.Models.Integration.IntegrationDetail", "IntegrationDetail")
                         .WithMany("Items")
                         .HasForeignKey("IntegrationDetailId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -237,17 +288,17 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                     b.Navigation("IntegrationDetail");
                 });
 
-            modelBuilder.Entity("IntegrationLogger.Models.ApiGatewayLog", b =>
+            modelBuilder.Entity("IntegrationLogger.Models.ApiGateway.ApiGatewayLog", b =>
                 {
                     b.Navigation("Details");
                 });
 
-            modelBuilder.Entity("IntegrationLogger.Models.IntegrationDetail", b =>
+            modelBuilder.Entity("IntegrationLogger.Models.Integration.IntegrationDetail", b =>
                 {
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("IntegrationLogger.Models.IntegrationLog", b =>
+            modelBuilder.Entity("IntegrationLogger.Models.Integration.IntegrationLog", b =>
                 {
                     b.Navigation("Details");
                 });

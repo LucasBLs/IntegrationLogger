@@ -44,6 +44,28 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                 });
 
             migrationBuilder.CreateTable(
+                name: "LogConfiguration",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "RAW(16)", nullable: false),
+                    LogSource = table.Column<string>(type: "NVARCHAR2(100)", maxLength: 100, nullable: true),
+                    LogRetentionPeriod = table.Column<int>(type: "NUMBER(10)", nullable: false),
+                    AutoArchive = table.Column<bool>(type: "NUMBER(1)", nullable: false),
+                    ArchivePath = table.Column<string>(type: "NVARCHAR2(100)", maxLength: 100, nullable: true),
+                    EmailNotification = table.Column<bool>(type: "NUMBER(1)", nullable: false),
+                    EmailRecipients = table.Column<string>(type: "NVARCHAR2(1000)", maxLength: 1000, nullable: true),
+                    EmailHost = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    EmailPort = table.Column<int>(type: "NUMBER(10)", nullable: false),
+                    EmailUsername = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    EmailPassword = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    EmailUseSSL = table.Column<bool>(type: "NUMBER(1)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LogConfiguration", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ApiGatewayDetail",
                 columns: table => new
                 {
@@ -205,6 +227,16 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                 name: "IX_IntegrationLog_Timestamp_IntegrationName",
                 table: "IntegrationLog",
                 columns: new[] { "Timestamp", "IntegrationName" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LogConfiguration_EmailRecipients",
+                table: "LogConfiguration",
+                column: "EmailRecipients");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LogConfiguration_LogSource",
+                table: "LogConfiguration",
+                column: "LogSource");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -214,6 +246,9 @@ namespace IntegrationLogger.Migrations.MigrationOracle
 
             migrationBuilder.DropTable(
                 name: "IntegrationItem");
+
+            migrationBuilder.DropTable(
+                name: "LogConfiguration");
 
             migrationBuilder.DropTable(
                 name: "ApiGatewayLog");
