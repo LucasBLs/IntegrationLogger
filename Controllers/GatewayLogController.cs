@@ -29,8 +29,11 @@ public class GatewayLogController : ControllerBase
             var response = new ApiResponse<List<GatewayLog>>(false, "ModelState Inválido.", null, errors);
             return BadRequest(response);
         }
+
+        HttpContext.Items["ProjectName"] = "IntegratorLogger";
         try
         {
+            return BadRequest();
             var result = await repository.GetGatewayLogs(startDate, endDate, projectName, requestPath, httpMethod, clientIp, statusCode, pageIndex, pageSize);
             return Ok(result.logs);
         }
@@ -52,8 +55,10 @@ public class GatewayLogController : ControllerBase
             var response = new ApiResponse<List<GatewayDetail>>(false, "ModelState Inválido.", null, errors);
             return BadRequest(response);
         }
+
+        HttpContext.Items["ProjectName"] = "IntegratorLoggera";
         try
-        {
+        {  
             var result = await repository.GetGatewayDetailsByLogId(apiGatewayLogId);
             return Ok(result);
         }

@@ -12,7 +12,7 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace IntegrationLogger.Migrations.MigrationOracle
 {
     [DbContext(typeof(IntegrationLogContextOracle))]
-    [Migration("20230510012605_InitialMigrationOracle")]
+    [Migration("20230510151603_InitialMigrationOracle")]
     partial class InitialMigrationOracle
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,7 +34,7 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                         .HasColumnType("RAW(16)");
 
                     b.Property<string>("Content")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("CLOB");
 
                     b.Property<string>("Message")
                         .HasColumnType("NVARCHAR2(2000)");

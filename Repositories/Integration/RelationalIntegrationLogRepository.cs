@@ -4,7 +4,6 @@ using IntegrationLogger.Extensions;
 using IntegrationLogger.Models.Integration;
 using IntegrationLogger.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace IntegrationLogger.Repositories.Integration;
 public class RelationalIntegrationLogRepository : IIntegrationLogRepository
@@ -84,13 +83,13 @@ public class RelationalIntegrationLogRepository : IIntegrationLogRepository
             query = query.Where(l => l.Timestamp >= startDate && l.Timestamp <= endDate);
         
         if (!string.IsNullOrEmpty(integrationName))
-            query = query.Where(l => l.IntegrationName.ToLower().Contains(integrationName.ToLower()));
+            query = query.Where(l => l.IntegrationName != null && l.IntegrationName.ToLower().Contains(integrationName.ToLower()));
 
         if (!string.IsNullOrEmpty(externalSystem))
-            query = query.Where(l => l.ExternalSystem == externalSystem);
+            query = query.Where(l => l.ExternalSystem != null && l.ExternalSystem.Contains(externalSystem));
         
         if (!string.IsNullOrEmpty(sourceSystem))
-            query = query.Where(l => l.SourceSystem == sourceSystem);
+            query = query.Where(l => l.SourceSystem != null && l.SourceSystem.Contains(sourceSystem));
 
         int totalCount = await query.CountAsync();
 
@@ -112,13 +111,13 @@ public class RelationalIntegrationLogRepository : IIntegrationLogRepository
             query = query.Where(l => l.Timestamp >= startDate && l.Timestamp <= endDate);
 
         if (!string.IsNullOrEmpty(detailIdentifier))
-            query = query.Where(x => x.DetailIdentifier.ToLower().Contains(detailIdentifier.ToLower()));
+            query = query.Where(l => l.DetailIdentifier!= null && l.DetailIdentifier.ToLower().Contains(detailIdentifier.ToLower()));
 
         if (filterWithIdentifier is true)
             query = query.Where(x => x.DetailIdentifier != null);
 
         if (!string.IsNullOrEmpty(integrationName))
-            query = query.Where(l => l.IntegrationLog.IntegrationName.ToLower().Contains(integrationName.ToLower()));
+            query = query.Where(l => l.IntegrationLog != null && l.IntegrationLog.IntegrationName != null && l.IntegrationLog.IntegrationName.ToLower().Contains(integrationName.ToLower()));
 
         int totalCount = await query.CountAsync();
 

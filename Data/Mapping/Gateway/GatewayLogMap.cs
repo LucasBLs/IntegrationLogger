@@ -33,6 +33,8 @@ public class GatewayLogMap : IEntityTypeConfiguration<GatewayLog>
             .HasForeignKey(x => x.ApiGatewayLogId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Ignore(x => x.Details);
+
         builder.HasIndex(x => x.ProjectName);
         builder.HasIndex(x => x.Timestamp);
         builder.HasIndex(x => x.StatusCode);

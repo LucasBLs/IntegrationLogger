@@ -73,7 +73,7 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                     Type = table.Column<int>(type: "NUMBER(10)", nullable: false),
                     Status = table.Column<int>(type: "NUMBER(10)", nullable: false),
                     Message = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    Content = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    Content = table.Column<string>(type: "CLOB", nullable: true),
                     Timestamp = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: false),
                     ApiGatewayLogId = table.Column<Guid>(type: "RAW(16)", nullable: false)
                 },

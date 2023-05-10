@@ -32,7 +32,7 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                         .HasColumnType("RAW(16)");
 
                     b.Property<string>("Content")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("CLOB");
 
                     b.Property<string>("Message")
                         .HasColumnType("NVARCHAR2(2000)");

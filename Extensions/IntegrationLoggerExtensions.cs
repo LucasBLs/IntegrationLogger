@@ -1,6 +1,7 @@
 ﻿using IntegrationLogger.Configuration;
 using IntegrationLogger.Data;
 using IntegrationLogger.Enums;
+using IntegrationLogger.Models;
 using IntegrationLogger.Repositories.Gateway;
 using IntegrationLogger.Repositories.Integration;
 using IntegrationLogger.Repositories.Interfaces;
@@ -145,7 +146,7 @@ public static class IntegrationLoggerExtensions
     public static IApplicationBuilder UseIntegrationLogger(this IApplicationBuilder app)
     {
         app.UseRouting();
-
+    
         app.UseSwagger(c => c.RouteTemplate = "integration-logger-swagger/{documentName}/swagger.json");
         app.UseSwaggerUI(c =>
         {
@@ -153,6 +154,7 @@ public static class IntegrationLoggerExtensions
             c.RoutePrefix = "integration-logger-swagger";
         });
 
+        app.UseMiddleware<ApiGatewayLoggingMiddleware>();
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();

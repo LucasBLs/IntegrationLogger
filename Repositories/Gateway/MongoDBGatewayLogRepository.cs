@@ -68,14 +68,32 @@ public class MongoDBGatewayLogRepository : IApiGatewayLogRepository
             Details = new List<GatewayDetail>(),
         };
         _apiGatewayLogs.InsertOne(log);
-        return log; 
+        return log;
     }
-    public GatewayDetail AddGatewayDetail(GatewayLog log, DetailType type, string? message, object? content)
+    public GatewayDetail AddGatewayDetail(GatewayLog log, DetailType type, string? message, object? content, int? GatewayLogStatusCode = null)
     {
+        IntegrationStatus statusCode = 0;
+        if (GatewayLogStatusCode != null)
+        {
+            log.StatusCode = GatewayLogStatusCode.Value;
+
+            // Atualizar o documento existente no MongoDB
+            var filter = Builders<GatewayLog>.Filter.Eq(d => d.Id, log.Id);
+            var update = Builders<GatewayLog>.Update.Set(d => d.StatusCode, GatewayLogStatusCode);
+            _apiGatewayLogs.UpdateOne(filter, update);
+
+            statusCode = GatewayLogStatusCode switch
+            {
+                >= 200 and <= 299 => IntegrationStatus.Success,
+                _ => IntegrationStatus.Failed,
+            };
+        }
+
         GatewayDetail detail = new()
         {
             ApiGatewayLogId = log.Id,
             Type = type,
+            Status = statusCode,
             Message = message,
             Content = content.SerializeIndentedObject(),
             Timestamp = DateTimeOffset.UtcNow.ToLocalTime(),
@@ -94,26 +112,26 @@ public class MongoDBGatewayLogRepository : IApiGatewayLogRepository
         if (startDate != null && endDate != null)
             query = query.Where(l => l.Timestamp >= startDate && l.Timestamp <= endDate);
 
-        if (!string.IsNullOrWhiteSpace(projectName))
-            query = query.Where(x => x.ProjectName == projectName);
+        if (!string.IsNullOrEmpty(projectName))
+            query = query.Where(x => x.ProjectName != null && x.ProjectName == projectName);
 
-        if (!string.IsNullOrWhiteSpace(requestPath))
-            query = query.Where(x => x.RequestPath == requestPath);
+        if (!string.IsNullOrEmpty(requestPath))
+            query = query.Where(x => x.RequestPath != null && x.RequestPath == requestPath);
 
         if (!string.IsNullOrWhiteSpace(httpMethod))
-            query = query.Where(x => x.HttpMethod == httpMethod);
+            query = query.Where(x => x.HttpMethod != null && x.HttpMethod == httpMethod);
 
         if (!string.IsNullOrWhiteSpace(clientIp))
-            query = query.Where(x => x.ClientIp == clientIp);
+            query = query.Where(x => x.ClientIp != null && x.ClientIp == clientIp);
 
         if (statusCode.HasValue)
             query = query.Where(x => x.StatusCode == statusCode.Value);
 
         int totalCount = await query.CountAsync();
         if (pageSize > 0)
-            query = query.Skip((pageIndex - 1) * pageSize).Take(pageSize);
+            query = query.OrderByDescending(x => x.Timestamp).Skip((pageIndex - 1) * pageSize).Take(pageSize);
 
-        var logs = await query.OrderByDescending(x => x.Timestamp).ToListAsync();
+        var logs = await query.ToListAsync();
 
         return (logs, totalCount);
     }

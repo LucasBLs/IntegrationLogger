@@ -144,16 +144,16 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
 
         if (startDate != null && endDate != null)
             query = query.Where(l => l.Timestamp >= startDate && l.Timestamp <= endDate);
-        
+
         if (!string.IsNullOrEmpty(integrationName))
-            query = query.Where(l => l.IntegrationName == integrationName);
-        
+            query = query.Where(l => l.IntegrationName != null && l.IntegrationName.ToLower().Contains(integrationName.ToLower()));
+
         if (!string.IsNullOrEmpty(externalSystem))
-            query = query.Where(l => l.ExternalSystem == externalSystem);
+            query = query.Where(l => l.ExternalSystem != null && l.ExternalSystem.Contains(externalSystem));
 
         if (!string.IsNullOrEmpty(sourceSystem))
-            query = query.Where(l => l.SourceSystem == sourceSystem);
-        
+            query = query.Where(l => l.SourceSystem != null && l.SourceSystem.Contains(sourceSystem));
+
         if (groupByIntegrationName)
             query = query.GroupBy(log => log.IntegrationName)
                          .Select(group => group.OrderByDescending(log => log.Timestamp).First());
@@ -172,19 +172,19 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
         var query = _integrationDetails.AsQueryable();
 
         if (integrationLogId != null)
-            query = query.Where(l => l.IntegrationLogId == integrationLogId);        
+            query = query.Where(l => l.IntegrationLogId == integrationLogId);
 
         if (startDate != null && endDate != null)
             query = query.Where(l => l.Timestamp >= startDate && l.Timestamp <= endDate);
-        
+
         if (!string.IsNullOrEmpty(detailIdentifier))
-            query = query.Where(x => x.DetailIdentifier.ToLower().Contains(detailIdentifier.ToLower()));
+            query = query.Where(l => l.DetailIdentifier != null && l.DetailIdentifier.ToLower().Contains(detailIdentifier.ToLower()));
 
         if (filterWithIdentifier is true)
             query = query.Where(x => x.DetailIdentifier != null);
 
         if (!string.IsNullOrEmpty(integrationName))
-            query = query.Where(l => l.IntegrationLog.IntegrationName.ToLower().Contains(integrationName.ToLower()));
+            query = query.Where(l => l.IntegrationLog != null && l.IntegrationLog.IntegrationName != null && l.IntegrationLog.IntegrationName.ToLower().Contains(integrationName.ToLower()));
 
         int totalCount = await query.CountAsync();
 

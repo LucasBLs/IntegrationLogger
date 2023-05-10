@@ -25,7 +25,21 @@ public class GatewayDetailMap : IEntityTypeConfiguration<GatewayDetail>
 
         builder.Property(x => x.Timestamp);
 
-        builder.Property(x => x.Content);
+        if (ProviderDb.LoggerDatabaseProvider == DatabaseProvider.Oracle)
+        {
+            builder.Property(x => x.Content)
+                .HasColumnType("CLOB");
+        }
+        else if (ProviderDb.LoggerDatabaseProvider == DatabaseProvider.SqlServer)
+        {
+            builder.Property(x => x.Content)
+                .HasColumnType("NVARCHAR(MAX)");
+        }
+        else if (ProviderDb.LoggerDatabaseProvider == DatabaseProvider.PostgreSQL)
+        {
+            builder.Property(x => x.Content)
+                .HasColumnType("TEXT");
+        }
 
         builder.Property(x => x.ApiGatewayLogId);
 
