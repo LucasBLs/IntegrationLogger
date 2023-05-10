@@ -16,7 +16,10 @@ public class GatewayDetailMap : IEntityTypeConfiguration<GatewayDetail>
         builder.Property(x => x.Id);
 
         builder.Property(x => x.Type)
-            .HasConversion(new EnumToNumberConverter<DetailType, int>());
+                .HasConversion(new EnumToNumberConverter<DetailType, int>());
+
+        builder.Property(x => x.Status)
+            .HasConversion(new EnumToNumberConverter<IntegrationStatus, int>());
 
         builder.Property(x => x.Message);
 

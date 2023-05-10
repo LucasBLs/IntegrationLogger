@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace IntegrationLogger.Migrations.MigrationOracle
+namespace IntegrationLogger.Migrations.MigrationPostgreSQL
 {
-    public partial class InitialMigrationOracle : Migration
+    public partial class InitialMigrationPostgreSQL : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,14 +13,14 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                 name: "GatewayLog",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "RAW(16)", nullable: false),
-                    ProjectName = table.Column<string>(type: "NVARCHAR2(450)", nullable: true),
-                    RequestPath = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    HttpMethod = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    ClientIp = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    StatusCode = table.Column<int>(type: "NUMBER(10)", nullable: true),
-                    RequestDuration = table.Column<long>(type: "NUMBER(19)", nullable: true),
-                    Timestamp = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProjectName = table.Column<string>(type: "text", nullable: true),
+                    RequestPath = table.Column<string>(type: "text", nullable: true),
+                    HttpMethod = table.Column<string>(type: "text", nullable: true),
+                    ClientIp = table.Column<string>(type: "text", nullable: true),
+                    StatusCode = table.Column<int>(type: "integer", nullable: true),
+                    RequestDuration = table.Column<long>(type: "bigint", nullable: true),
+                    Timestamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -31,12 +31,12 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                 name: "IntegrationLog",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "RAW(16)", nullable: false),
-                    IntegrationName = table.Column<string>(type: "NVARCHAR2(450)", nullable: true),
-                    Message = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    ExternalSystem = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    SourceSystem = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    Timestamp = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    IntegrationName = table.Column<string>(type: "text", nullable: true),
+                    Message = table.Column<string>(type: "text", nullable: true),
+                    ExternalSystem = table.Column<string>(type: "text", nullable: true),
+                    SourceSystem = table.Column<string>(type: "text", nullable: true),
+                    Timestamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -47,18 +47,18 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                 name: "LogConfiguration",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "RAW(16)", nullable: false),
-                    LogSource = table.Column<string>(type: "NVARCHAR2(100)", maxLength: 100, nullable: true),
-                    LogRetentionPeriod = table.Column<int>(type: "NUMBER(10)", nullable: false),
-                    AutoArchive = table.Column<bool>(type: "NUMBER(1)", nullable: false),
-                    ArchivePath = table.Column<string>(type: "NVARCHAR2(100)", maxLength: 100, nullable: true),
-                    EmailNotification = table.Column<bool>(type: "NUMBER(1)", nullable: false),
-                    EmailRecipients = table.Column<string>(type: "NVARCHAR2(1000)", maxLength: 1000, nullable: true),
-                    EmailHost = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    EmailPort = table.Column<int>(type: "NUMBER(10)", nullable: false),
-                    EmailUsername = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    EmailPassword = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    EmailUseSSL = table.Column<bool>(type: "NUMBER(1)", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    LogSource = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    LogRetentionPeriod = table.Column<int>(type: "integer", nullable: false),
+                    AutoArchive = table.Column<bool>(type: "boolean", nullable: false),
+                    ArchivePath = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    EmailNotification = table.Column<bool>(type: "boolean", nullable: false),
+                    EmailRecipients = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    EmailHost = table.Column<string>(type: "text", nullable: true),
+                    EmailPort = table.Column<int>(type: "integer", nullable: false),
+                    EmailUsername = table.Column<string>(type: "text", nullable: true),
+                    EmailPassword = table.Column<string>(type: "text", nullable: true),
+                    EmailUseSSL = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -69,12 +69,13 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                 name: "GatewayDetail",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "RAW(16)", nullable: false),
-                    Type = table.Column<int>(type: "NUMBER(10)", nullable: false),
-                    Message = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    Content = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    Timestamp = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: false),
-                    ApiGatewayLogId = table.Column<Guid>(type: "RAW(16)", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    Message = table.Column<string>(type: "text", nullable: true),
+                    Content = table.Column<string>(type: "text", nullable: true),
+                    Timestamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    ApiGatewayLogId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -91,12 +92,12 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                 name: "IntegrationDetail",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "RAW(16)", nullable: false),
-                    Status = table.Column<int>(type: "NUMBER(10)", nullable: false),
-                    DetailIdentifier = table.Column<string>(type: "NVARCHAR2(450)", nullable: true),
-                    Message = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    Timestamp = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: false),
-                    IntegrationLogId = table.Column<Guid>(type: "RAW(16)", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    DetailIdentifier = table.Column<string>(type: "text", nullable: true),
+                    Message = table.Column<string>(type: "text", nullable: true),
+                    Timestamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    IntegrationLogId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -113,14 +114,14 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                 name: "IntegrationItem",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "RAW(16)", nullable: false),
-                    ItemType = table.Column<int>(type: "NUMBER(10)", nullable: false),
-                    ItemIdentifier = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    ItemStatus = table.Column<int>(type: "NUMBER(10)", nullable: false),
-                    Message = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    Content = table.Column<string>(type: "CLOB", nullable: true),
-                    Timestamp = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: false),
-                    IntegrationDetailId = table.Column<Guid>(type: "RAW(16)", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ItemType = table.Column<int>(type: "integer", nullable: false),
+                    ItemIdentifier = table.Column<string>(type: "text", nullable: true),
+                    ItemStatus = table.Column<int>(type: "integer", nullable: false),
+                    Message = table.Column<string>(type: "text", nullable: true),
+                    Content = table.Column<string>(type: "TEXT", nullable: true),
+                    Timestamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    IntegrationDetailId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -194,7 +195,7 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                 columns: new[] { "Timestamp", "IntegrationLogId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_IntegrationDetail_Timestamp_IntegrationLogId_DetailIdentifier",
+                name: "IX_IntegrationDetail_Timestamp_IntegrationLogId_DetailIdentifi~",
                 table: "IntegrationDetail",
                 columns: new[] { "Timestamp", "IntegrationLogId", "DetailIdentifier" });
 

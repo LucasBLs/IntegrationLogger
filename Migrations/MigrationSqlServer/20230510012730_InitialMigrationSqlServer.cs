@@ -10,7 +10,7 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ApiGatewayLog",
+                name: "GatewayLog",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -24,7 +24,7 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ApiGatewayLog", x => x.Id);
+                    table.PrimaryKey("PK_GatewayLog", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -66,11 +66,12 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                 });
 
             migrationBuilder.CreateTable(
-                name: "ApiGatewayDetail",
+                name: "GatewayDetail",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Timestamp = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
@@ -78,11 +79,11 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ApiGatewayDetail", x => x.Id);
+                    table.PrimaryKey("PK_GatewayDetail", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ApiGatewayDetail_ApiGatewayLog_ApiGatewayLogId",
+                        name: "FK_GatewayDetail_GatewayLog_ApiGatewayLogId",
                         column: x => x.ApiGatewayLogId,
-                        principalTable: "ApiGatewayLog",
+                        principalTable: "GatewayLog",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -134,43 +135,43 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApiGatewayDetail_ApiGatewayLogId",
-                table: "ApiGatewayDetail",
+                name: "IX_GatewayDetail_ApiGatewayLogId",
+                table: "GatewayDetail",
                 column: "ApiGatewayLogId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApiGatewayDetail_ApiGatewayLogId_Timestamp",
-                table: "ApiGatewayDetail",
+                name: "IX_GatewayDetail_ApiGatewayLogId_Timestamp",
+                table: "GatewayDetail",
                 columns: new[] { "ApiGatewayLogId", "Timestamp" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApiGatewayDetail_Timestamp",
-                table: "ApiGatewayDetail",
+                name: "IX_GatewayDetail_Timestamp",
+                table: "GatewayDetail",
                 column: "Timestamp");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApiGatewayLog_ProjectName",
-                table: "ApiGatewayLog",
+                name: "IX_GatewayLog_ProjectName",
+                table: "GatewayLog",
                 column: "ProjectName");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApiGatewayLog_ProjectName_Timestamp",
-                table: "ApiGatewayLog",
+                name: "IX_GatewayLog_ProjectName_Timestamp",
+                table: "GatewayLog",
                 columns: new[] { "ProjectName", "Timestamp" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApiGatewayLog_RequestDuration",
-                table: "ApiGatewayLog",
+                name: "IX_GatewayLog_RequestDuration",
+                table: "GatewayLog",
                 column: "RequestDuration");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApiGatewayLog_StatusCode",
-                table: "ApiGatewayLog",
+                name: "IX_GatewayLog_StatusCode",
+                table: "GatewayLog",
                 column: "StatusCode");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApiGatewayLog_Timestamp",
-                table: "ApiGatewayLog",
+                name: "IX_GatewayLog_Timestamp",
+                table: "GatewayLog",
                 column: "Timestamp");
 
             migrationBuilder.CreateIndex(
@@ -242,7 +243,7 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ApiGatewayDetail");
+                name: "GatewayDetail");
 
             migrationBuilder.DropTable(
                 name: "IntegrationItem");
@@ -251,7 +252,7 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                 name: "LogConfiguration");
 
             migrationBuilder.DropTable(
-                name: "ApiGatewayLog");
+                name: "GatewayLog");
 
             migrationBuilder.DropTable(
                 name: "IntegrationDetail");

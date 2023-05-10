@@ -37,6 +37,9 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                     b.Property<string>("Message")
                         .HasColumnType("NVARCHAR2(2000)");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("NUMBER(10)");
+
                     b.Property<DateTimeOffset>("Timestamp")
                         .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
 

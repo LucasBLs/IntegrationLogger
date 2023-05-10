@@ -22,7 +22,7 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("IntegrationLogger.Models.ApiGateway.ApiGatewayDetail", b =>
+            modelBuilder.Entity("IntegrationLogger.Models.Gateway.GatewayDetail", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -36,6 +36,9 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
 
                     b.Property<string>("Message")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<DateTimeOffset>("Timestamp")
                         .HasColumnType("datetimeoffset");
@@ -51,10 +54,10 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
 
                     b.HasIndex("ApiGatewayLogId", "Timestamp");
 
-                    b.ToTable("ApiGatewayDetail", (string)null);
+                    b.ToTable("GatewayDetail", (string)null);
                 });
 
-            modelBuilder.Entity("IntegrationLogger.Models.ApiGateway.ApiGatewayLog", b =>
+            modelBuilder.Entity("IntegrationLogger.Models.Gateway.GatewayLog", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -93,7 +96,7 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
 
                     b.HasIndex("ProjectName", "Timestamp");
 
-                    b.ToTable("ApiGatewayLog", (string)null);
+                    b.ToTable("GatewayLog", (string)null);
                 });
 
             modelBuilder.Entity("IntegrationLogger.Models.Integration.IntegrationDetail", b =>
@@ -253,9 +256,9 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                     b.ToTable("LogConfiguration", (string)null);
                 });
 
-            modelBuilder.Entity("IntegrationLogger.Models.ApiGateway.ApiGatewayDetail", b =>
+            modelBuilder.Entity("IntegrationLogger.Models.Gateway.GatewayDetail", b =>
                 {
-                    b.HasOne("IntegrationLogger.Models.ApiGateway.ApiGatewayLog", "ApiGatewayLog")
+                    b.HasOne("IntegrationLogger.Models.Gateway.GatewayLog", "ApiGatewayLog")
                         .WithMany("Details")
                         .HasForeignKey("ApiGatewayLogId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -286,7 +289,7 @@ namespace IntegrationLogger.Migrations.MigrationSqlServer
                     b.Navigation("IntegrationDetail");
                 });
 
-            modelBuilder.Entity("IntegrationLogger.Models.ApiGateway.ApiGatewayLog", b =>
+            modelBuilder.Entity("IntegrationLogger.Models.Gateway.GatewayLog", b =>
                 {
                     b.Navigation("Details");
                 });
