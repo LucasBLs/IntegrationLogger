@@ -33,7 +33,6 @@ public class GatewayLogController : ControllerBase
         HttpContext.Items["ProjectName"] = "IntegratorLogger";
         try
         {
-            return BadRequest();
             var result = await repository.GetGatewayLogs(startDate, endDate, projectName, requestPath, httpMethod, clientIp, statusCode, pageIndex, pageSize);
             return Ok(result.logs);
         }
