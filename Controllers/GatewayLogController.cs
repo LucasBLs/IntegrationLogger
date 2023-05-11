@@ -23,6 +23,7 @@ public class GatewayLogController : ControllerBase
         int pageIndex = 1,
         int pageSize = 0)
     {
+        HttpContext.Items["ProjectName"] = "IntegratorLogger";
         if (!ModelState.IsValid)
         {
             var errors = ModelState.GetErrors();
@@ -30,7 +31,6 @@ public class GatewayLogController : ControllerBase
             return BadRequest(response);
         }
 
-        HttpContext.Items["ProjectName"] = "IntegratorLogger";
         try
         {
             var result = await repository.GetGatewayLogs(startDate, endDate, projectName, requestPath, httpMethod, clientIp, statusCode, pageIndex, pageSize);
@@ -48,6 +48,7 @@ public class GatewayLogController : ControllerBase
         [FromServices] IApiGatewayLogRepository repository,
         Guid apiGatewayLogId)
     {
+        HttpContext.Items["ProjectName"] = "IntegratorLogger";
         if (!ModelState.IsValid)
         {
             var errors = ModelState.GetErrors();
@@ -55,7 +56,6 @@ public class GatewayLogController : ControllerBase
             return BadRequest(response);
         }
 
-        HttpContext.Items["ProjectName"] = "IntegratorLoggera";
         try
         {  
             var result = await repository.GetGatewayDetailsByLogId(apiGatewayLogId);

@@ -7,8 +7,10 @@ using IntegrationLogger.Repositories.Integration;
 using IntegrationLogger.Repositories.Interfaces;
 using IntegrationLogger.Utils;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO.Compression;
 using System.Text.Json.Serialization;
 
 namespace IntegrationLogger.Extensions;
@@ -127,26 +129,15 @@ public static class IntegrationLoggerExtensions
             c.CustomSchemaIds(type => type.FullName);
         });
 
-        services.AddIntegrationLogger();
-        services.AddControllers()
-        .ConfigureApiBehaviorOptions(options =>
-        {
-            options.SuppressModelStateInvalidFilter = true;
-        })
-        .AddJsonOptions(x =>
-        {
-            x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-            x.JsonSerializerOptions.IgnoreReadOnlyFields = true;
-            x.JsonSerializerOptions.IgnoreReadOnlyProperties = true;
-        });
+        ConfigureCompressionAndControllers(services);
+        services.AddEndpointsApiExplorer();
 
         return services;
     }
 
     public static IApplicationBuilder UseIntegrationLogger(this IApplicationBuilder app)
     {
-        app.UseRouting();
-    
+        app.UseMiddleware<ApiGatewayLoggingMiddleware>();
         app.UseSwagger(c => c.RouteTemplate = "integration-logger-swagger/{documentName}/swagger.json");
         app.UseSwaggerUI(c =>
         {
@@ -154,12 +145,45 @@ public static class IntegrationLoggerExtensions
             c.RoutePrefix = "integration-logger-swagger";
         });
 
-        app.UseMiddleware<ApiGatewayLoggingMiddleware>();
+        app.UseRouting();
+        app.UseCors(x => x
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+
+        app.UseHttpsRedirection();
+        app.UseResponseCompression();
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
         });
 
         return app;
+    }
+
+    static void ConfigureCompressionAndControllers(IServiceCollection services)
+    {
+        services.AddMemoryCache();
+        services.AddResponseCompression(option =>
+        {
+            option.Providers.Add<GzipCompressionProvider>();
+        });
+
+        services.Configure<GzipCompressionProviderOptions>(options =>
+        {
+            options.Level = CompressionLevel.Optimal;
+        });
+
+        services.AddControllers()
+            .ConfigureApiBehaviorOptions(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            })
+            .AddJsonOptions(x =>
+            {
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                x.JsonSerializerOptions.IgnoreReadOnlyFields = true;
+                x.JsonSerializerOptions.IgnoreReadOnlyProperties = true;
+            });
     }
 }

@@ -12,7 +12,13 @@ public class ApiGatewayLoggingMiddleware
         "/_blazor",
         "/_blazor/negotiate",
         "/gateway-log",
-        "/"
+        "/",
+        "/_framework/blazor.server.js",
+        "/_content/MudBlazor/MudBlazor.min.css",
+        "/_content/MudBlazor/MudBlazor.min.js",
+        "/integration-logger-swagger/v1/swagger.json",
+        "/integration-logger-swagger/index.html",
+        "/swagger"
     };
     public ApiGatewayLoggingMiddleware(RequestDelegate next)
     {
@@ -33,7 +39,7 @@ public class ApiGatewayLoggingMiddleware
 
         await _next(context);
 
-        var projectName = context.Items["ProjectName"] as string ?? "Default Project Name";
+        var projectName = context.Items["ProjectName"] as string ?? "Project Not Found";
         var requestContent = await FormatRequest(context.Request);
 
         var gatewayLog = repository.AddGatewayLog(projectName, context.Request.Path, context.Request.Method, context.Connection.RemoteIpAddress?.ToString(), context.Response.StatusCode, 0);
