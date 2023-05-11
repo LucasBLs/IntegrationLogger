@@ -3,6 +3,7 @@ using IntegrationLogger.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 
 public class ApiGatewayLoggingMiddleware
 {
@@ -32,7 +33,9 @@ public class ApiGatewayLoggingMiddleware
             await _next(context);
             return;
         }
+        var watch = new Stopwatch();
 
+        watch.Start();
         var originalResponseBodyStream = context.Response.Body;
         using var responseBody = new MemoryStream();
         context.Response.Body = responseBody;
@@ -42,7 +45,8 @@ public class ApiGatewayLoggingMiddleware
         var projectName = context.Items["ProjectName"] as string ?? "Project Not Found";
         var requestContent = await FormatRequest(context.Request);
 
-        var gatewayLog = repository.AddGatewayLog(projectName, context.Request.Path, context.Request.Method, context.Connection.RemoteIpAddress?.ToString(), context.Response.StatusCode, 0);
+        watch.Stop();
+        var gatewayLog = repository.AddGatewayLog(projectName, context.Request.Path, context.Request.Method, $"{context.Connection.RemoteIpAddress}", context.Response.StatusCode, watch.ElapsedMilliseconds);
 
         repository.AddGatewayDetail(gatewayLog, DetailType.Request, "Request Received", requestContent);
 
@@ -57,7 +61,6 @@ public class ApiGatewayLoggingMiddleware
         repository.AddGatewayDetail(gatewayLog, DetailType.Response, "Response Sent", responseContent, statusCode);
         await responseBody.CopyToAsync(originalResponseBodyStream);
     }
-
 
     private async Task<string> FormatRequest(HttpRequest request)
     {
