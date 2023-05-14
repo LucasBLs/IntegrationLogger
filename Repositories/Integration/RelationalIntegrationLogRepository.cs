@@ -17,6 +17,14 @@ public class RelationalIntegrationLogRepository : IIntegrationLogRepository
     #region AddLogs
     public IntegrationLog AddLog(string integrationName, string message, string externalSystem, string sourceSystem)
     {
+        LogLevel configuredLogLevel = _context.LogConfigurations.FirstOrDefault()?.LogLevel ?? LogLevel.Info;
+        if (configuredLogLevel == LogLevel.None)
+            return new();
+
+        var project = _context.IntegrationLogs.FirstOrDefault(x => x.IntegrationName == integrationName);
+        if (project is not null)
+            return project;
+
         IntegrationLog log = new()
         {
             IntegrationName = integrationName,
@@ -32,6 +40,10 @@ public class RelationalIntegrationLogRepository : IIntegrationLogRepository
     }
     public IntegrationDetail AddDetail(IntegrationLog log, IntegrationStatus status, string detailIdentifier, string? message)
     {
+        LogLevel configuredLogLevel = _context.LogConfigurations.FirstOrDefault()?.LogLevel ?? LogLevel.Info;
+        if (configuredLogLevel == LogLevel.None)
+            return new();
+
         IntegrationDetail detail = new()
         {
             IntegrationLogId = log.Id,
@@ -49,6 +61,10 @@ public class RelationalIntegrationLogRepository : IIntegrationLogRepository
     }
     public IntegrationItem AddItem(IntegrationDetail detail, ItemType itemType, string itemIdentifier, IntegrationStatus itemStatus, string? message, object? content)
     {
+        LogLevel configuredLogLevel = _context.LogConfigurations.FirstOrDefault()?.LogLevel ?? LogLevel.Info;
+        if (configuredLogLevel == LogLevel.None)
+            return new();
+
         IntegrationItem item = new()
         {
             IntegrationDetailId = detail.Id,

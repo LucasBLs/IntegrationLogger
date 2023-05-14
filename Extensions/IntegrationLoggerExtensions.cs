@@ -17,17 +17,18 @@ namespace IntegrationLogger.Extensions;
 public static class IntegrationLoggerExtensions
 {
     public static IServiceCollection AddIntegrationLogger(
-        this IServiceCollection services,
-        string connectionString,
-        DatabaseProvider provider,
-        string? mongoDatabaseName = null,
-        string? roles = null)
+         this IServiceCollection services,
+         string connectionString,
+         DatabaseProvider provider,
+         string? mongoDatabaseName = null,
+         string? roles = null)
     {
         var migrationsDirectoryName = provider switch
         {
             DatabaseProvider.SqlServer => "MigrationSqlServer",
             DatabaseProvider.PostgreSQL => "MigrationPostgreSQL",
             DatabaseProvider.Oracle => "MigrationOracle",
+            DatabaseProvider.MongoDB => null,
             _ => throw new ArgumentException($"Provedor de banco de dados não suportado: {provider}")
         };
 
@@ -46,9 +47,13 @@ public static class IntegrationLoggerExtensions
 
         #region IntegrationLog
         services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextBase>()));
-        services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextSqlServer>()));
-        services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextPostgreSQL>()));
-        services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextOracle>()));
+        if (provider == DatabaseProvider.SqlServer)
+            services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextSqlServer>()));
+        if (provider == DatabaseProvider.PostgreSQL)
+            services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextPostgreSQL>()));
+        if (provider == DatabaseProvider.Oracle)
+            services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextOracle>()));
+
         services.AddScoped<MongoDBIntegrationLogRepository>();
 
         services.AddScoped<IIntegrationLogRepository>(serviceProvider =>
@@ -68,9 +73,12 @@ public static class IntegrationLoggerExtensions
 
         #region GatewayLog
         services.AddScoped(x => new RelationalGatewayLogRepository(x.GetRequiredService<IntegrationLogContextBase>()));
-        services.AddScoped(x => new RelationalGatewayLogRepository(x.GetRequiredService<IntegrationLogContextSqlServer>()));
-        services.AddScoped(x => new RelationalGatewayLogRepository(x.GetRequiredService<IntegrationLogContextPostgreSQL>()));
-        services.AddScoped(x => new RelationalGatewayLogRepository(x.GetRequiredService<IntegrationLogContextOracle>()));
+        if (provider == DatabaseProvider.SqlServer)
+            services.AddScoped(x => new RelationalGatewayLogRepository(x.GetRequiredService<IntegrationLogContextSqlServer>()));
+        if (provider == DatabaseProvider.PostgreSQL)
+            services.AddScoped(x => new RelationalGatewayLogRepository(x.GetRequiredService<IntegrationLogContextPostgreSQL>()));
+        if (provider == DatabaseProvider.Oracle)
+            services.AddScoped(x => new RelationalGatewayLogRepository(x.GetRequiredService<IntegrationLogContextOracle>()));
         services.AddScoped<MongoDBGatewayLogRepository>();
 
         services.AddScoped<IApiGatewayLogRepository>(serviceProvider =>
@@ -106,6 +114,7 @@ public static class IntegrationLoggerExtensions
                     ProviderDb.LoggerDatabaseProvider = DatabaseProvider.PostgreSQL;
                     services.AddDbContext<IntegrationLogContextPostgreSQL>((serviceProvider, options) =>
                     {
+                        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
                         var config = serviceProvider.GetRequiredService<IntegrationLoggerConfiguration>();
                         options.UseNpgsql(config.ConnectionString);
                     });

@@ -19,7 +19,10 @@ public class ApiGatewayLoggingMiddleware
         "/_content/MudBlazor/MudBlazor.min.js",
         "/integration-logger-swagger/v1/swagger.json",
         "/integration-logger-swagger/index.html",
-        "/swagger"
+        "/swagger",
+        "/swagger/index.html",
+        "/favicon.ico",
+        "/wwwroot/favicon.ico"
     };
     public ApiGatewayLoggingMiddleware(RequestDelegate next)
     {

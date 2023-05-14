@@ -49,16 +49,12 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                 {
                     Id = table.Column<Guid>(type: "RAW(16)", nullable: false),
                     LogSource = table.Column<string>(type: "NVARCHAR2(100)", maxLength: 100, nullable: true),
+                    LogLevel = table.Column<int>(type: "NUMBER(10)", nullable: false),
+                    LogStepByStep = table.Column<bool>(type: "NUMBER(1)", nullable: false),
                     LogRetentionPeriod = table.Column<int>(type: "NUMBER(10)", nullable: false),
                     AutoArchive = table.Column<bool>(type: "NUMBER(1)", nullable: false),
                     ArchivePath = table.Column<string>(type: "NVARCHAR2(100)", maxLength: 100, nullable: true),
-                    EmailNotification = table.Column<bool>(type: "NUMBER(1)", nullable: false),
-                    EmailRecipients = table.Column<string>(type: "NVARCHAR2(1000)", maxLength: 1000, nullable: true),
-                    EmailHost = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    EmailPort = table.Column<int>(type: "NUMBER(10)", nullable: false),
-                    EmailUsername = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    EmailPassword = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    EmailUseSSL = table.Column<bool>(type: "NUMBER(1)", nullable: false)
+                    EmailNotification = table.Column<bool>(type: "NUMBER(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -111,6 +107,33 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                 });
 
             migrationBuilder.CreateTable(
+                name: "EmailConfiguration",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "RAW(16)", nullable: false),
+                    SmtpServer = table.Column<string>(type: "NVARCHAR2(100)", maxLength: 100, nullable: true),
+                    SmtpPort = table.Column<int>(type: "NUMBER(10)", nullable: false),
+                    SenderName = table.Column<string>(type: "NVARCHAR2(100)", maxLength: 100, nullable: false),
+                    SenderEmail = table.Column<string>(type: "NVARCHAR2(100)", maxLength: 100, nullable: false),
+                    EmailPassword = table.Column<string>(type: "NVARCHAR2(100)", maxLength: 100, nullable: true),
+                    RecipientEmail = table.Column<string>(type: "NVARCHAR2(100)", maxLength: 100, nullable: false),
+                    CcEmails = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    EmailSubject = table.Column<string>(type: "NVARCHAR2(100)", maxLength: 100, nullable: true),
+                    EmailBody = table.Column<string>(type: "NVARCHAR2(1000)", maxLength: 1000, nullable: true),
+                    LogConfigurationId = table.Column<Guid>(type: "RAW(16)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmailConfiguration", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EmailConfiguration_LogConfiguration_LogConfigurationId",
+                        column: x => x.LogConfigurationId,
+                        principalTable: "LogConfiguration",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "IntegrationItem",
                 columns: table => new
                 {
@@ -133,6 +156,27 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmailConfiguration_LogConfigurationId",
+                table: "EmailConfiguration",
+                column: "LogConfigurationId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmailConfiguration_RecipientEmail",
+                table: "EmailConfiguration",
+                column: "RecipientEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmailConfiguration_SenderEmail",
+                table: "EmailConfiguration",
+                column: "SenderEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmailConfiguration_SmtpServer",
+                table: "EmailConfiguration",
+                column: "SmtpServer");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GatewayDetail_ApiGatewayLogId",
@@ -230,11 +274,6 @@ namespace IntegrationLogger.Migrations.MigrationOracle
                 columns: new[] { "Timestamp", "IntegrationName" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_LogConfiguration_EmailRecipients",
-                table: "LogConfiguration",
-                column: "EmailRecipients");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_LogConfiguration_LogSource",
                 table: "LogConfiguration",
                 column: "LogSource");
@@ -242,6 +281,9 @@ namespace IntegrationLogger.Migrations.MigrationOracle
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "EmailConfiguration");
+
             migrationBuilder.DropTable(
                 name: "GatewayDetail");
 

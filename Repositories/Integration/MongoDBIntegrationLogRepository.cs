@@ -1,8 +1,10 @@
 ﻿using IntegrationLogger.Configuration;
 using IntegrationLogger.Enums;
 using IntegrationLogger.Extensions;
+using IntegrationLogger.Models.Configuration;
 using IntegrationLogger.Models.Integration;
 using IntegrationLogger.Repositories.Interfaces;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 
@@ -12,6 +14,8 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
     private readonly IMongoCollection<IntegrationLog> _integrationLogs;
     private readonly IMongoCollection<IntegrationDetail> _integrationDetails;
     private readonly IMongoCollection<IntegrationItem> _integrationItems;
+    private readonly IMongoCollection<LogConfiguration> _logConfigurations;
+    private readonly IMongoCollection<EmailConfiguration> _emailConfigurations;
 
     public MongoDBIntegrationLogRepository(IntegrationLoggerConfiguration config)
     {
@@ -21,10 +25,14 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
         _integrationLogs = database.GetCollection<IntegrationLog>("IntegrationLogs");
         _integrationDetails = database.GetCollection<IntegrationDetail>("IntegrationDetails");
         _integrationItems = database.GetCollection<IntegrationItem>("IntegrationItems");
+        _logConfigurations = database.GetCollection<LogConfiguration>("LogConfigurations");
+        _emailConfigurations = database.GetCollection<EmailConfiguration>("EmailConfigurations");
 
         CreateIntegrationLogIndexes();
         CreateIntegrationDetailIndexes();
         CreateIntegrationItemIndexes();
+        CreateLogConfigurationIndexes();
+        CreateEmailConfigurationIndexes();
     }
 
     private void CreateIntegrationLogIndexes()
@@ -32,12 +40,7 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
         var indexKeysBuilder = Builders<IntegrationLog>.IndexKeys;
         var compoundIndexKeys = indexKeysBuilder
                                     .Ascending(l => l.Timestamp)
-                                    .Ascending(l => l.IntegrationName)
-                                    .Ascending(l => new
-                                    {
-                                        l.Timestamp,
-                                        l.IntegrationName
-                                    });
+                                    .Ascending(l => l.IntegrationName);
         var indexOptions = new CreateIndexOptions { Name = "IntegrationLogIndex" };
         _integrationLogs.Indexes.CreateOne(new CreateIndexModel<IntegrationLog>(compoundIndexKeys, indexOptions));
 
@@ -48,18 +51,7 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
         var integrationLogIdIndexKeys = indexKeysBuilder
                                             .Ascending(i => i.Timestamp)
                                             .Ascending(d => d.IntegrationLogId)
-                                            .Ascending(x => x.DetailIdentifier)
-                                            .Ascending(o => new
-                                            {
-                                                o.Timestamp, 
-                                                o.IntegrationLogId
-                                            })
-                                            .Ascending(u => new
-                                            {
-                                                u.Timestamp,
-                                                u.IntegrationLogId,
-                                                u.DetailIdentifier
-                                            });
+                                            .Ascending(x => x.DetailIdentifier);
         var indexOptions = new CreateIndexOptions { Name = "IntegrationDetailIndex" };
         _integrationDetails.Indexes.CreateOne(new CreateIndexModel<IntegrationDetail>(integrationLogIdIndexKeys, indexOptions));
     }
@@ -68,20 +60,40 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
         var indexKeysBuilder = Builders<IntegrationItem>.IndexKeys;
         var integrationDetailIdIndexKeys = indexKeysBuilder
                                             .Ascending(i => i.Timestamp)
-                                            .Ascending(i => i.IntegrationDetailId)
-                                            .Ascending(i => new
-                                            {
-                                                i.Timestamp, 
-                                                i.IntegrationDetailId
-                                            });
-                                         
+                                            .Ascending(i => i.IntegrationDetailId);                                       
         var indexOptions = new CreateIndexOptions { Name = "IntegrationItemIndex" };
         _integrationItems.Indexes.CreateOne(new CreateIndexModel<IntegrationItem>(integrationDetailIdIndexKeys, indexOptions));
+    }
+    private void CreateLogConfigurationIndexes()
+    {
+        var indexKeysBuilder = Builders<LogConfiguration>.IndexKeys;
+        var compoundIndexKeys = indexKeysBuilder
+                                    .Ascending(l => l.LogSource)
+                                    .Ascending(l => l.LogLevel);
+        var indexOptions = new CreateIndexOptions { Name = "LogConfigurationIndex" };
+        _logConfigurations.Indexes.CreateOne(new CreateIndexModel<LogConfiguration>(compoundIndexKeys, indexOptions));
+    }
+    private void CreateEmailConfigurationIndexes()
+    {
+        var indexKeysBuilder = Builders<EmailConfiguration>.IndexKeys;
+        var compoundIndexKeys = indexKeysBuilder
+                                    .Ascending(l => l.SenderEmail)
+                                    .Ascending(l => l.RecipientEmail);
+        var indexOptions = new CreateIndexOptions { Name = "EmailConfigurationIndex" };
+        _emailConfigurations.Indexes.CreateOne(new CreateIndexModel<EmailConfiguration>(compoundIndexKeys, indexOptions));
     }
 
     #region AddLogs
     public IntegrationLog AddLog(string integrationName, string message, string externalSystem, string sourceSystem)
     {
+        LogLevel configuredLogLevel = _logConfigurations.Find(new BsonDocument()).FirstOrDefault()?.LogLevel ?? LogLevel.Info;
+        if (configuredLogLevel == LogLevel.None)
+            return new();
+
+        var project = _integrationLogs.Find(log => log.IntegrationName == integrationName).FirstOrDefault();
+        if (project is not null)
+            return project;
+
         IntegrationLog log = new()
         {
             IntegrationName = integrationName,
@@ -96,6 +108,9 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
     }
     public IntegrationDetail AddDetail(IntegrationLog log, IntegrationStatus status, string? detailIdentifier, string? message)
     {
+        LogLevel configuredLogLevel = _logConfigurations.Find(new BsonDocument()).FirstOrDefault()?.LogLevel ?? LogLevel.Info;
+        if (configuredLogLevel == LogLevel.None)
+            return new();
         IntegrationDetail detail = new()
         {
             IntegrationLogId = log.Id,
@@ -111,6 +126,9 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
     }
     public IntegrationItem AddItem(IntegrationDetail detail, ItemType itemType, string itemIdentifier, IntegrationStatus itemStatus, string? message, object? content)
     {
+        LogLevel configuredLogLevel = _logConfigurations.Find(new BsonDocument()).FirstOrDefault()?.LogLevel ?? LogLevel.Info;
+        if (configuredLogLevel == LogLevel.None)
+            return new();
         IntegrationItem item = new()
         {
             IntegrationDetailId = detail.Id,

@@ -22,6 +22,103 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("IntegrationLogger.Models.Configuration.EmailConfiguration", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CcEmails")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("EmailBody")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("EmailPassword")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("EmailSubject")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid>("LogConfigurationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("RecipientEmail")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("SenderEmail")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("SenderName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("SmtpPort")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SmtpServer")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LogConfigurationId")
+                        .IsUnique();
+
+                    b.HasIndex("RecipientEmail");
+
+                    b.HasIndex("SenderEmail");
+
+                    b.HasIndex("SmtpServer");
+
+                    b.ToTable("EmailConfiguration", (string)null);
+                });
+
+            modelBuilder.Entity("IntegrationLogger.Models.Configuration.LogConfiguration", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ArchivePath")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("AutoArchive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("EmailNotification")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("LogLevel")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("LogRetentionPeriod")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("LogSource")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("LogStepByStep")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LogSource");
+
+                    b.ToTable("LogConfiguration", (string)null);
+                });
+
             modelBuilder.Entity("IntegrationLogger.Models.Gateway.GatewayDetail", b =>
                 {
                     b.Property<Guid>("Id")
@@ -32,7 +129,7 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                         .HasColumnType("uuid");
 
                     b.Property<string>("Content")
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Message")
                         .HasColumnType("text");
@@ -205,61 +302,21 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                     b.ToTable("IntegrationLog", (string)null);
                 });
 
-            modelBuilder.Entity("IntegrationLogger.Models.LogConfiguration", b =>
+            modelBuilder.Entity("IntegrationLogger.Models.Configuration.EmailConfiguration", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.HasOne("IntegrationLogger.Models.Configuration.LogConfiguration", "LogConfiguration")
+                        .WithOne("EmailConfiguration")
+                        .HasForeignKey("IntegrationLogger.Models.Configuration.EmailConfiguration", "LogConfigurationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<string>("ArchivePath")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<bool>("AutoArchive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("EmailHost")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("EmailNotification")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("EmailPassword")
-                        .HasColumnType("text");
-
-                    b.Property<int>("EmailPort")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("EmailRecipients")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<bool>("EmailUseSSL")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("EmailUsername")
-                        .HasColumnType("text");
-
-                    b.Property<int>("LogRetentionPeriod")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("LogSource")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmailRecipients");
-
-                    b.HasIndex("LogSource");
-
-                    b.ToTable("LogConfiguration", (string)null);
+                    b.Navigation("LogConfiguration");
                 });
 
             modelBuilder.Entity("IntegrationLogger.Models.Gateway.GatewayDetail", b =>
                 {
                     b.HasOne("IntegrationLogger.Models.Gateway.GatewayLog", "ApiGatewayLog")
-                        .WithMany("Details")
+                        .WithMany()
                         .HasForeignKey("ApiGatewayLogId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -289,9 +346,10 @@ namespace IntegrationLogger.Migrations.MigrationPostgreSQL
                     b.Navigation("IntegrationDetail");
                 });
 
-            modelBuilder.Entity("IntegrationLogger.Models.Gateway.GatewayLog", b =>
+            modelBuilder.Entity("IntegrationLogger.Models.Configuration.LogConfiguration", b =>
                 {
-                    b.Navigation("Details");
+                    b.Navigation("EmailConfiguration")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("IntegrationLogger.Models.Integration.IntegrationDetail", b =>

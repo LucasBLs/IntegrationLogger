@@ -29,12 +29,7 @@ public class MongoDBGatewayLogRepository : IApiGatewayLogRepository
         var indexKeysBuilder = Builders<GatewayLog>.IndexKeys;
         var compoundIndexKeys = indexKeysBuilder
                                     .Ascending(l => l.Timestamp)
-                                    .Ascending(l => l.ProjectName)
-                                    .Ascending(l => new
-                                    {
-                                        l.Timestamp,
-                                        l.ProjectName
-                                    });
+                                    .Ascending(l => l.ProjectName);
         var indexOptions = new CreateIndexOptions { Name = "ApiGatewayLogIndex" };
         _apiGatewayLogs.Indexes.CreateOne(new CreateIndexModel<GatewayLog>(compoundIndexKeys, indexOptions));
     }
@@ -43,12 +38,7 @@ public class MongoDBGatewayLogRepository : IApiGatewayLogRepository
         var indexKeysBuilder = Builders<GatewayDetail>.IndexKeys;
         var apiGatewayLogIdIndexKeys = indexKeysBuilder
                                             .Ascending(i => i.Timestamp)
-                                            .Ascending(d => d.ApiGatewayLogId)
-                                            .Ascending(o => new
-                                            {
-                                                o.Timestamp,
-                                                o.ApiGatewayLogId
-                                            });
+                                            .Ascending(d => d.ApiGatewayLogId);
         var indexOptions = new CreateIndexOptions { Name = "ApiGatewayDetailIndex" };
         _apiGatewayDetails.Indexes.CreateOne(new CreateIndexModel<GatewayDetail>(apiGatewayLogIdIndexKeys, indexOptions));
     }
