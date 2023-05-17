@@ -2,6 +2,7 @@
 using IntegrationLogger.Data;
 using IntegrationLogger.Enums;
 using IntegrationLogger.Models;
+using IntegrationLogger.Repositories.Configuration;
 using IntegrationLogger.Repositories.Gateway;
 using IntegrationLogger.Repositories.Integration;
 using IntegrationLogger.Repositories.Interfaces;
@@ -42,95 +43,13 @@ public static class IntegrationLoggerExtensions
             Roles = roles,
             MigrationsDirectory = migrationsDirectory
         });
-
         services.AddScoped(x => new RoleBasedAuthorizationFilter(roles));
 
-        #region IntegrationLog
-        services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextBase>()));
-        if (provider == DatabaseProvider.SqlServer)
-            services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextSqlServer>()));
-        if (provider == DatabaseProvider.PostgreSQL)
-            services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextPostgreSQL>()));
-        if (provider == DatabaseProvider.Oracle)
-            services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextOracle>()));
-
-        services.AddScoped<MongoDBIntegrationLogRepository>();
-
-        services.AddScoped<IIntegrationLogRepository>(serviceProvider =>
-        {
-            var config = serviceProvider.GetRequiredService<IntegrationLoggerConfiguration>();
-
-            if (config.Provider == DatabaseProvider.MongoDB)
-            {
-                return serviceProvider.GetRequiredService<MongoDBIntegrationLogRepository>();
-            }
-            else
-            {
-                return serviceProvider.GetRequiredService<RelationalIntegrationLogRepository>();
-            }
-        });
-        #endregion
-
-        #region GatewayLog
-        services.AddScoped(x => new RelationalGatewayLogRepository(x.GetRequiredService<IntegrationLogContextBase>()));
-        if (provider == DatabaseProvider.SqlServer)
-            services.AddScoped(x => new RelationalGatewayLogRepository(x.GetRequiredService<IntegrationLogContextSqlServer>()));
-        if (provider == DatabaseProvider.PostgreSQL)
-            services.AddScoped(x => new RelationalGatewayLogRepository(x.GetRequiredService<IntegrationLogContextPostgreSQL>()));
-        if (provider == DatabaseProvider.Oracle)
-            services.AddScoped(x => new RelationalGatewayLogRepository(x.GetRequiredService<IntegrationLogContextOracle>()));
-        services.AddScoped<MongoDBGatewayLogRepository>();
-
-        services.AddScoped<IApiGatewayLogRepository>(serviceProvider =>
-        {
-            var config = serviceProvider.GetRequiredService<IntegrationLoggerConfiguration>();
-
-            if (config.Provider == DatabaseProvider.MongoDB)
-            {
-                return serviceProvider.GetRequiredService<MongoDBGatewayLogRepository>();
-            }
-            else
-            {
-                return serviceProvider.GetRequiredService<RelationalGatewayLogRepository>();
-            }
-        });
-        #endregion
-
+        RegisterServicesToIntegrationLog(services, provider);
+        RegisterServicesToApiGatewayLog(services, provider);
+        RegisterServicesToLogConfiguration(services, provider);
         services.AddHostedService<MigrateDatabaseHostedService>();
-
-        if (provider != DatabaseProvider.MongoDB)
-        {
-            switch (provider)
-            {
-                case DatabaseProvider.SqlServer:
-                    ProviderDb.LoggerDatabaseProvider = DatabaseProvider.SqlServer;
-                    services.AddDbContext<IntegrationLogContextSqlServer>((serviceProvider, options) =>
-                    {
-                        var config = serviceProvider.GetRequiredService<IntegrationLoggerConfiguration>();
-                        options.UseSqlServer(config.ConnectionString);
-                    });
-                    break;
-                case DatabaseProvider.PostgreSQL:
-                    ProviderDb.LoggerDatabaseProvider = DatabaseProvider.PostgreSQL;
-                    services.AddDbContext<IntegrationLogContextPostgreSQL>((serviceProvider, options) =>
-                    {
-                        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-                        var config = serviceProvider.GetRequiredService<IntegrationLoggerConfiguration>();
-                        options.UseNpgsql(config.ConnectionString);
-                    });
-                    break;
-                case DatabaseProvider.Oracle:
-                    ProviderDb.LoggerDatabaseProvider = DatabaseProvider.Oracle;
-                    services.AddDbContext<IntegrationLogContextOracle>((serviceProvider, options) =>
-                    {
-                        var config = serviceProvider.GetRequiredService<IntegrationLoggerConfiguration>();
-                        options.UseOracle(config.ConnectionString);
-                    });
-                    break;
-                default:
-                    throw new ArgumentException($"Provedor de banco de dados não suportado: {provider}");
-            }
-        }
+        ConfigureDatabaseProvider(services, provider);
 
         services.AddSwaggerGen(c =>
         {
@@ -194,5 +113,123 @@ public static class IntegrationLoggerExtensions
                 x.JsonSerializerOptions.IgnoreReadOnlyFields = true;
                 x.JsonSerializerOptions.IgnoreReadOnlyProperties = true;
             });
+    }
+    static void RegisterServicesToIntegrationLog(IServiceCollection services, DatabaseProvider provider)
+    {
+        #region IntegrationLog
+        services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextBase>()));
+        if (provider == DatabaseProvider.SqlServer)
+            services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextSqlServer>()));
+        if (provider == DatabaseProvider.PostgreSQL)
+            services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextPostgreSQL>()));
+        if (provider == DatabaseProvider.Oracle)
+            services.AddScoped(x => new RelationalIntegrationLogRepository(x.GetRequiredService<IntegrationLogContextOracle>()));
+
+        services.AddScoped<MongoDBIntegrationLogRepository>();
+
+        services.AddScoped<IIntegrationLogRepository>(serviceProvider =>
+        {
+            var config = serviceProvider.GetRequiredService<IntegrationLoggerConfiguration>();
+
+            if (config.Provider == DatabaseProvider.MongoDB)
+            {
+                return serviceProvider.GetRequiredService<MongoDBIntegrationLogRepository>();
+            }
+            else
+            {
+                return serviceProvider.GetRequiredService<RelationalIntegrationLogRepository>();
+            }
+        });
+        #endregion
+    }
+    static void RegisterServicesToApiGatewayLog(IServiceCollection services, DatabaseProvider provider)
+    {
+        #region GatewayLog
+        services.AddScoped(x => new RelationalGatewayLogRepository(x.GetRequiredService<IntegrationLogContextBase>()));
+        if (provider == DatabaseProvider.SqlServer)
+            services.AddScoped(x => new RelationalGatewayLogRepository(x.GetRequiredService<IntegrationLogContextSqlServer>()));
+        if (provider == DatabaseProvider.PostgreSQL)
+            services.AddScoped(x => new RelationalGatewayLogRepository(x.GetRequiredService<IntegrationLogContextPostgreSQL>()));
+        if (provider == DatabaseProvider.Oracle)
+            services.AddScoped(x => new RelationalGatewayLogRepository(x.GetRequiredService<IntegrationLogContextOracle>()));
+        services.AddScoped<MongoDBGatewayLogRepository>();
+
+        services.AddScoped<IApiGatewayLogRepository>(serviceProvider =>
+        {
+            var config = serviceProvider.GetRequiredService<IntegrationLoggerConfiguration>();
+
+            if (config.Provider == DatabaseProvider.MongoDB)
+            {
+                return serviceProvider.GetRequiredService<MongoDBGatewayLogRepository>();
+            }
+            else
+            {
+                return serviceProvider.GetRequiredService<RelationalGatewayLogRepository>();
+            }
+        });
+        #endregion
+    }
+    static void RegisterServicesToLogConfiguration(IServiceCollection services, DatabaseProvider provider)
+    {
+        #region LogConfiguration
+        services.AddScoped(x => new RelationalLogConfigurationRepository(x.GetRequiredService<IntegrationLogContextBase>()));
+        if (provider == DatabaseProvider.SqlServer)
+            services.AddScoped(x => new RelationalLogConfigurationRepository(x.GetRequiredService<IntegrationLogContextSqlServer>()));
+        if (provider == DatabaseProvider.PostgreSQL)
+            services.AddScoped(x => new RelationalLogConfigurationRepository(x.GetRequiredService<IntegrationLogContextPostgreSQL>()));
+        if (provider == DatabaseProvider.Oracle)
+            services.AddScoped(x => new RelationalLogConfigurationRepository(x.GetRequiredService<IntegrationLogContextOracle>()));
+        services.AddScoped<MongoDBLogConfigurationRepository>();
+
+        services.AddScoped<IRelationalLogConfigurationRepository>(serviceProvider =>
+        {
+            var config = serviceProvider.GetRequiredService<IntegrationLoggerConfiguration>();
+
+            if (config.Provider == DatabaseProvider.MongoDB)
+            {
+                return serviceProvider.GetRequiredService<MongoDBLogConfigurationRepository>();
+            }
+            else
+            {
+                return serviceProvider.GetRequiredService<RelationalLogConfigurationRepository>();
+            }
+        });
+        #endregion
+    }
+    static void ConfigureDatabaseProvider(IServiceCollection services, DatabaseProvider provider)
+    {
+        if (provider != DatabaseProvider.MongoDB)
+        {
+            switch (provider)
+            {
+                case DatabaseProvider.SqlServer:
+                    ProviderDb.LoggerDatabaseProvider = DatabaseProvider.SqlServer;
+                    services.AddDbContext<IntegrationLogContextSqlServer>((serviceProvider, options) =>
+                    {
+                        var config = serviceProvider.GetRequiredService<IntegrationLoggerConfiguration>();
+                        options.UseSqlServer(config.ConnectionString);
+                    });
+                    break;
+                case DatabaseProvider.PostgreSQL:
+                    ProviderDb.LoggerDatabaseProvider = DatabaseProvider.PostgreSQL;
+                    services.AddDbContext<IntegrationLogContextPostgreSQL>((serviceProvider, options) =>
+                    {
+                        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+                        var config = serviceProvider.GetRequiredService<IntegrationLoggerConfiguration>();
+                        options.UseNpgsql(config.ConnectionString);
+                    });
+                    break;
+                case DatabaseProvider.Oracle:
+                    ProviderDb.LoggerDatabaseProvider = DatabaseProvider.Oracle;
+                    services.AddDbContext<IntegrationLogContextOracle>((serviceProvider, options) =>
+                    {
+                        var config = serviceProvider.GetRequiredService<IntegrationLoggerConfiguration>();
+                        options.UseOracle(config.ConnectionString);
+                    });
+                    break;
+                default:
+                    throw new ArgumentException($"Provedor de banco de dados não suportado: {provider}");
+            }
+        }
     }
 }
