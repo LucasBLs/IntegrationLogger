@@ -1,5 +1,9 @@
-using IntegrationLogger.Data.Mapping;
-using IntegrationLogger.Models;
+using IntegrationLogger.Data.Mapping.Configuration;
+using IntegrationLogger.Data.Mapping.Gateway;
+using IntegrationLogger.Data.Mapping.Integration;
+using IntegrationLogger.Models.Configuration;
+using IntegrationLogger.Models.Gateway;
+using IntegrationLogger.Models.Integration;
 using Microsoft.EntityFrameworkCore;
 
 namespace IntegrationLogger.Data;
@@ -8,16 +12,27 @@ public abstract class IntegrationLogContextBase : DbContext
     public IntegrationLogContextBase(DbContextOptions options) : base(options)
     {
     }
-
     public DbSet<IntegrationLog> IntegrationLogs { get; set; } = default!;
     public DbSet<IntegrationDetail> IntegrationDetails { get; set; } = default!;
     public DbSet<IntegrationItem> IntegrationItems { get; set; } = default!;
+
+    public DbSet<GatewayLog> ApiGatewayLogs { get; set; } = default!;
+    public DbSet<GatewayDetail> ApiGatewayDetails { get; set; } = default!;
+
+    public DbSet<LogConfiguration> LogConfigurations { get; set; } = default!;
+    public DbSet<EmailConfiguration> EmailConfigurations { get; set; } = default!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new IntegrationLogMap());
         modelBuilder.ApplyConfiguration(new IntegrationDetailMap());
         modelBuilder.ApplyConfiguration(new IntegrationItemMap());
+
+        modelBuilder.ApplyConfiguration(new GatewayLogMap());
+        modelBuilder.ApplyConfiguration(new GatewayDetailMap());
+
+        modelBuilder.ApplyConfiguration(new LogConfigurationMap());
+        modelBuilder.ApplyConfiguration(new EmailConfigurationMap());
     }
 }
 

@@ -20,18 +20,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Views\LogViewer\Index.cshtml" />
-    <None Remove="Views\LogViewer\LogDetail.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-	  <EmbeddedResource Include="Views\wwwroot\**\*" />
-	  <EmbeddedResource Include="Views\LogViewer\LogDetail.cshtml" />
-    <EmbeddedResource Include="Views\LogViewer\Index.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.16" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -43,18 +31,16 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="6.0.16" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.16" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="6.0.16" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.19.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.8" />
     <PackageReference Include="Oracle.EntityFrameworkCore" Version="6.21.90" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\MigrationOracle\" />
-    <Folder Include="Migrations\MigrationPostgreSQL\" />
-    <Folder Include="Migrations\MigrationSqlServer\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>
