@@ -22,7 +22,12 @@ public class ApiGatewayLoggingMiddleware
         "/swagger",
         "/swagger/index.html",
         "/favicon.ico",
-        "/wwwroot/favicon.ico"
+        "/wwwroot/favicon.ico",
+        "/integration-logger-swagger/",
+        "/integration-logger-swagger/swagger-ui.css",
+        "/integration-logger-swagger/swagger-ui-standalone-preset.js",
+        "/integration-logger-swagger/swagger-ui-bundle.js",
+        "/integration-logger-swagger/favicon-32x32.png"
     };
     public ApiGatewayLoggingMiddleware(RequestDelegate next)
     {
