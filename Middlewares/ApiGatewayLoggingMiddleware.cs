@@ -27,7 +27,13 @@ public class ApiGatewayLoggingMiddleware
         "/integration-logger-swagger/swagger-ui.css",
         "/integration-logger-swagger/swagger-ui-standalone-preset.js",
         "/integration-logger-swagger/swagger-ui-bundle.js",
-        "/integration-logger-swagger/favicon-32x32.png"
+        "/integration-logger-swagger/favicon-32x32.png",
+        "/dashboard",
+        "/dashboard/stats",
+        "/dashboard/css182042560001",
+        "/dashboard/css-dark18201324172007",
+        "/dashboard/recurring",
+        "/dashboard/fonts/glyphicons-halflings-regular/woff2"
     };
     public ApiGatewayLoggingMiddleware(RequestDelegate next)
     {
