@@ -91,7 +91,7 @@ public class ApiGatewayLoggingMiddleware
         bodyAsText = await reader.ReadToEndAsync();
         request.Body.Position = 0; // Reset the request body stream position for next middleware
         
-        var queryString = request.QueryString.HasValue ? Uri.UnescapeDataString(request.QueryString.Value) : "";
+        var queryString = request.QueryString.HasValue ? Uri.UnescapeDataString($"{request.QueryString.Value}") : "";
         var url = $"{request.Scheme}://{request.Host}{request.Path} {queryString}";
 
         return $"{url} {bodyAsText}";
