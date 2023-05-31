@@ -22,6 +22,7 @@ public class IntegrationDetailMap : IEntityTypeConfiguration<IntegrationDetail>
             .HasConversion(new EnumToNumberConverter<IntegrationStatus, int>());
 
         builder.Property(x => x.Message);
+        builder.Property(x => x.IntegrationLogName);
         builder.Property(x => x.IntegrationLogId);
         builder.HasMany(x => x.Items)
             .WithOne(x => x.IntegrationDetail)

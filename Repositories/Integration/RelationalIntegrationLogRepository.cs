@@ -51,6 +51,7 @@ public class RelationalIntegrationLogRepository : IIntegrationLogRepository
             DetailIdentifier = detailIdentifier,
             Message = message,
             Timestamp = DateTimeOffset.UtcNow.ToLocalTime(),
+            IntegrationLogName = log.IntegrationName,
             Items = new List<IntegrationItem>(),
         };
 
@@ -110,9 +111,9 @@ public class RelationalIntegrationLogRepository : IIntegrationLogRepository
         int totalCount = await query.CountAsync();
 
         if (pageSize > 0)
-            query = query.Skip((pageIndex - 1) * pageSize).Take(pageSize);
+            query = query.OrderByDescending(x => x.Timestamp).Skip((pageIndex - 1) * pageSize).Take(pageSize);
 
-        var logs = await query.OrderByDescending(x => x.Timestamp).ToListAsync();
+        var logs = await query.ToListAsync();
 
         return (logs, totalCount);
     }
@@ -132,15 +133,15 @@ public class RelationalIntegrationLogRepository : IIntegrationLogRepository
         if (filterWithIdentifier is true)
             query = query.Where(x => x.DetailIdentifier != null);
 
-        if (!string.IsNullOrEmpty(integrationName))
-            query = query.Where(l => l.IntegrationLog != null && l.IntegrationLog.IntegrationName != null && l.IntegrationLog.IntegrationName.ToLower().Contains(integrationName.ToLower()));
+        if (integrationName is not null && integrationName.Any())
+            query = query.Where(delivery => delivery.IntegrationLogName != null && integrationName.Contains(delivery.IntegrationLogName));
 
         int totalCount = await query.CountAsync();
 
         if (pageSize > 0)
-            query = query.Skip((pageIndex - 1) * pageSize).Take(pageSize);
+            query = query.OrderByDescending(x => x.Timestamp).Skip((pageIndex - 1) * pageSize).Take(pageSize);
 
-        var details = await query.OrderByDescending(x => x.Timestamp).ToListAsync();
+        var details = await query.ToListAsync();
 
         return (details, totalCount);
     }

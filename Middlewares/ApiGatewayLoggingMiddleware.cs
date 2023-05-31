@@ -1,9 +1,13 @@
-﻿using IntegrationLogger.Enums;
+﻿using Amazon.Auth.AccessControlPolicy;
+using IntegrationLogger.Enums;
 using IntegrationLogger.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
+using System.Net;
+using System.Text;
+using System.Web;
 
 public class ApiGatewayLoggingMiddleware
 {
@@ -33,7 +37,9 @@ public class ApiGatewayLoggingMiddleware
         "/dashboard/css182042560001",
         "/dashboard/css-dark18201324172007",
         "/dashboard/recurring",
-        "/dashboard/fonts/glyphicons-halflings-regular/woff2"
+        "/dashboard/fonts/glyphicons-halflings-regular/woff2",
+        "/logs",
+        "/Order"
     };
     public ApiGatewayLoggingMiddleware(RequestDelegate next)
     {
@@ -79,13 +85,18 @@ public class ApiGatewayLoggingMiddleware
     private async Task<string> FormatRequest(HttpRequest request)
     {
         request.EnableBuffering();
-        var body = request.Body;
-        var buffer = new byte[Convert.ToInt32(request.ContentLength)];
-        await request.Body.ReadAsync(buffer, 0, buffer.Length);
-        var bodyAsText = System.Text.Encoding.UTF8.GetString(buffer);
-        request.Body = body;
-        return $"{request.Scheme} {request.Host}{request.Path} {request.QueryString} {bodyAsText}";
+
+        string bodyAsText;
+        using var reader = new StreamReader(request.Body, Encoding.UTF8, leaveOpen: true); 
+        bodyAsText = await reader.ReadToEndAsync();
+        request.Body.Position = 0; // Reset the request body stream position for next middleware
+        
+        var queryString = request.QueryString.HasValue ? Uri.UnescapeDataString(request.QueryString.Value) : "";
+        var url = $"{request.Scheme}://{request.Host}{request.Path} {queryString}";
+
+        return $"{url} {bodyAsText}";
     }
+
 
     private async Task<object> FormatResponse(HttpResponse response)
     {

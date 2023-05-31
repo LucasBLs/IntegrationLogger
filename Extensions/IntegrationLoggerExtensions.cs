@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
 
@@ -108,6 +109,7 @@ public static class IntegrationLoggerExtensions
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                 x.JsonSerializerOptions.IgnoreReadOnlyFields = true;
                 x.JsonSerializerOptions.IgnoreReadOnlyProperties = true;
+                x.JsonSerializerOptions.WriteIndented = true;
             });
     }
     static void RegisterServicesToIntegrationLog(IServiceCollection services, DatabaseProvider provider)

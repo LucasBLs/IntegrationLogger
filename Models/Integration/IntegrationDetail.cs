@@ -14,6 +14,7 @@ public class IntegrationDetail
     public string? Message { get; set; }
     [BsonRepresentation(BsonType.String)]
     public DateTimeOffset Timestamp { get; set; }
+    public string? IntegrationLogName { get; set; }
     [BsonRepresentation(BsonType.String)]
     public Guid IntegrationLogId { get; set; }
     public IntegrationLog? IntegrationLog { get; set; }
