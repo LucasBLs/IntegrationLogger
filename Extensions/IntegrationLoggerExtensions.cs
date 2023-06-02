@@ -82,7 +82,7 @@ public static class IntegrationLoggerExtensions
 
         app.UseHttpsRedirection();
         app.UseResponseCompression();
-    
+
         return app;
     }
 
