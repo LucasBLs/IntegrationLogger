@@ -20,8 +20,11 @@ jobs:
     - name: Build with dotnet
       run: dotnet build --configuration Release
 
+    - name: Test
+      run: dotnet test
+    
     - name: Create the Package
       run: dotnet pack --configuration Release
 
     - name: Publish
-      run: dotnet nuget push "bin/Release/*.nupkg" -k ${{ secrets.GH_PACKAGES_TOKEN }} -s https://nuget.pkg.github.com/LucasBLs/index.json
+      run: dotnet nuget push "bin/Release/*.nupkg" -k ${{ secrets.NUGET_TOKEN }} -s https://api.nuget.org/v3/index.json

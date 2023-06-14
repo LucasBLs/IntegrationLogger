@@ -32,6 +32,8 @@ namespace IntegrationLogger.Utils
                 case DatabaseProvider.Oracle:
                     await MigrateAsync<IntegrationLogContextOracle>(scope, cancellationToken);
                     break;
+                case DatabaseProvider.MongoDB:
+                    break;
                 default:
                     throw new ArgumentException($"Provedor de banco de dados não suportado: {config.Provider}");
             }

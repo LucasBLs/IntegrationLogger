@@ -3,6 +3,7 @@ using System;
 using IntegrationLogger.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 
@@ -11,9 +12,10 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace IntegrationLogger.Migrations.MigrationOracle
 {
     [DbContext(typeof(IntegrationLogContextOracle))]
-    partial class IntegrationLogContextOracleModelSnapshot : ModelSnapshot
+    [Migration("20230514002207_InitialMigrationOracle")]
+    partial class InitialMigrationOracle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -207,9 +209,6 @@ namespace IntegrationLogger.Migrations.MigrationOracle
 
                     b.Property<Guid>("IntegrationLogId")
                         .HasColumnType("RAW(16)");
-
-                    b.Property<string>("IntegrationLogName")
-                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Message")
                         .HasColumnType("NVARCHAR2(2000)");
