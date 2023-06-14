@@ -11,7 +11,7 @@
     <Authors>Lucas Lemos</Authors>
     <PackageDescription>Create Logs Package</PackageDescription>
     <Description>Create Logs Package</Description>
-    <RepositoryUrl>https://github.com/LucasBLs/IntegrationLogger</RepositoryUrl>
+    <!-- <RepositoryUrl>https://github.com/LucasBLs/IntegrationLogger</RepositoryUrl> -->
     <PackageProjectUrl>https://github.com/LucasBLs/IntegrationLogger</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>Logger,MongoDB,SqlServer,Oracle,Postgres</PackageTags>
