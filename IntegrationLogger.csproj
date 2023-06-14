@@ -6,13 +6,13 @@
     <Nullable>enable</Nullable>
 
     <PackageId>IntegrationLogger</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <License>MIT</License>
     <Authors>Lucas Lemos</Authors>
     <PackageDescription>Create Logs Package</PackageDescription>
     <Description>Create Logs Package</Description>
     <!-- <RepositoryUrl>https://github.com/LucasBLs/IntegrationLogger</RepositoryUrl> -->
-    <PackageProjectUrl>https://github.com/LucasBLs/IntegrationLogger</PackageProjectUrl>
+    <!-- <PackageProjectUrl>https://github.com/LucasBLs/IntegrationLogger</PackageProjectUrl> -->
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>Logger,MongoDB,SqlServer,Oracle,Postgres</PackageTags>
     <Title>IntegrationLogger</Title>
