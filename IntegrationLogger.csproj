@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
-    <PackageId>IntegratorLogger</PackageId>
+    <PackageId>IntegrationLogger</PackageId>
     <Version>1.0.0</Version>
     <License>MIT</License>
     <Authors>Lucas Lemos</Authors>
@@ -15,7 +15,7 @@
     <PackageProjectUrl>https://github.com/LucasBLs/IntegrationLogger</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>Logger,MongoDB,SqlServer,Oracle,Postgres</PackageTags>
-    <Title>IntegratorLogger</Title>
+    <Title>IntegrationLogger</Title>
     <Summary>Create Logs Package</Summary>
   </PropertyGroup>
 
