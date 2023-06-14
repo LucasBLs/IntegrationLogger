@@ -11,7 +11,7 @@
     <Authors>Lucas Lemos</Authors>
     <PackageDescription>Create Logs Package</PackageDescription>
     <Description>Create Logs Package</Description>
-    <RepositoryUrl>https://github.com/LucasBLs/IntegrationLogger</RepositoryUrl>
+    <!-- <RepositoryUrl>https://github.com/LucasBLs/IntegrationLogger</RepositoryUrl> -->
     <PackageProjectUrl>https://github.com/LucasBLs/IntegrationLogger</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>Logger,MongoDB,SqlServer,Oracle,Postgres</PackageTags>
@@ -29,10 +29,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="6.0.16" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.16" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
-    <PackageReference Include="MongoDB.Driver" Version="2.19.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.19.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.8" />
     <PackageReference Include="Oracle.EntityFrameworkCore" Version="6.21.90" />
