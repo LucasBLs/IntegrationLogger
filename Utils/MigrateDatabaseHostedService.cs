@@ -1,6 +1,7 @@
 ﻿using IntegrationLogger.Configuration;
 using IntegrationLogger.Data;
 using IntegrationLogger.Enums;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,7 +45,11 @@ public class MigrateDatabaseHostedService : IHostedService
         if (dbContext != null)
         {
             var migrator = dbContext.Database.GetService<IMigrator>();
-            await migrator.MigrateAsync(cancellationToken: cancellationToken);
+            if (dbContext.Database.GetPendingMigrations().Any())
+            { 
+                // await dbContext.Database.MigrateAsync(cancellationToken: cancellationToken);
+                await migrator.MigrateAsync(cancellationToken: cancellationToken);
+            }
         }
     }
 
