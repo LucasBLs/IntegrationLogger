@@ -5,7 +5,6 @@ namespace IntegrationLogger.Utils;
 public class RoleBasedAuthorizationFilter : IAuthorizationFilter
 {
     private readonly string? _role;
-
     public RoleBasedAuthorizationFilter(string? role = null)
     {
         _role = role;
