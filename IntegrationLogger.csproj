@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
 
     <PackageId>IntegrationLogger</PackageId>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <License>MIT</License>
     <Authors>Lucas Lemos</Authors>
     <PackageDescription>Create Logs Package</PackageDescription>
