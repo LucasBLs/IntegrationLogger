@@ -13,7 +13,7 @@ public class RelationalLogConfigurationRepository : IRelationalLogConfigurationR
     public async Task<LogConfiguration?> GetLogConfigurationByIdAsync(Guid id)
          => await _context.LogConfigurations.FirstOrDefaultAsync(x => x.Id == id);
     public async Task<LogConfiguration?> GetLogConfigurationBySourceAsync(string source)
-            => await _context.LogConfigurations.FirstOrDefaultAsync(x => x.LogSource == source);
+            => await _context.LogConfigurations.FirstOrDefaultAsync(x => x.IntegrationLog!.IntegrationName == source);
     public async Task<List<LogConfiguration>> GetLogConfigurationsAsync()
          => await _context.LogConfigurations.AsNoTracking().ToListAsync();
     public async Task UpdateLogConfigurationAsync(LogConfiguration logConfiguration)

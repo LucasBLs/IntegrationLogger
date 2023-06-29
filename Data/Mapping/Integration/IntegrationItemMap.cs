@@ -16,11 +16,8 @@ public class IntegrationItemMap : IEntityTypeConfiguration<IntegrationItem>
         builder.Property(x => x.Id)
             .IsRequired();
 
-        builder.Property(x => x.ItemType)
-            .HasConversion(new EnumToNumberConverter<ItemType, int>());
-
         builder.Property(x => x.ItemStatus)
-            .HasConversion(new EnumToNumberConverter<IntegrationStatus, int>());
+            .HasConversion(new EnumToNumberConverter<LogLevel, int>());
 
         builder.Property(x => x.Message);
 

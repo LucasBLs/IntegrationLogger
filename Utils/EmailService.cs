@@ -5,10 +5,12 @@ using System.Net.Mail;
 namespace IntegrationLogger.Utils;
 public class EmailService
 {
-    public async Task SendEmail(EmailConfiguration emailConfiguration)
+    public static async Task SendEmail(EmailConfiguration emailConfiguration)
     {
-        var mailMessage = new MailMessage();
-        mailMessage.From = new MailAddress(emailConfiguration.SenderEmail, emailConfiguration.SenderName);
+        var mailMessage = new MailMessage
+        {
+            From = new MailAddress(emailConfiguration.SenderEmail, emailConfiguration.SenderName)
+        };
         mailMessage.To.Add(emailConfiguration.RecipientEmail);
         var ccEmails = emailConfiguration.CcEmails.Split(',').ToList();
         ccEmails.ForEach(ccEmail => mailMessage.CC.Add(ccEmail));

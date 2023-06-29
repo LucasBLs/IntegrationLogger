@@ -17,7 +17,7 @@ public class RelationalIntegrationLogRepository : IIntegrationLogRepository
     #region AddLogs
     public IntegrationLog AddLog(string integrationName, string message, string externalSystem, string sourceSystem)
     {
-        LogLevel configuredLogLevel = _context.LogConfigurations.FirstOrDefault()?.LogLevel ?? LogLevel.Info;
+        LogLevel configuredLogLevel = _context.LogConfigurations.FirstOrDefault()?.LogLevel ?? LogLevel.Alert;
         if (configuredLogLevel == LogLevel.None)
             return new();
 
@@ -38,9 +38,9 @@ public class RelationalIntegrationLogRepository : IIntegrationLogRepository
         _context.SaveChanges();
         return log;
     }
-    public IntegrationDetail AddDetail(IntegrationLog log, IntegrationStatus status, string detailIdentifier, string? message)
+    public IntegrationDetail AddDetail(IntegrationLog log, LogLevel status, string detailIdentifier, string? message)
     {
-        LogLevel configuredLogLevel = _context.LogConfigurations.FirstOrDefault()?.LogLevel ?? LogLevel.Info;
+        LogLevel configuredLogLevel = _context.LogConfigurations.FirstOrDefault()?.LogLevel ?? LogLevel.Alert;
         if (configuredLogLevel == LogLevel.None)
             return new();
 
@@ -60,16 +60,15 @@ public class RelationalIntegrationLogRepository : IIntegrationLogRepository
         _context.SaveChanges();
         return detail;
     }
-    public IntegrationItem AddItem(IntegrationDetail detail, ItemType itemType, string itemIdentifier, IntegrationStatus itemStatus, string? message, object? content)
+    public IntegrationItem AddItem(IntegrationDetail detail, string itemIdentifier, LogLevel itemStatus, string? message, object? content)
     {
-        LogLevel configuredLogLevel = _context.LogConfigurations.FirstOrDefault()?.LogLevel ?? LogLevel.Info;
+        LogLevel configuredLogLevel = _context.LogConfigurations.FirstOrDefault()?.LogLevel ?? LogLevel.Alert;
         if (configuredLogLevel == LogLevel.None)
             return new();
 
         IntegrationItem item = new()
         {
             IntegrationDetailId = detail.Id,
-            ItemType = itemType,
             ItemIdentifier = itemIdentifier,
             ItemStatus = itemStatus,
             Message = message,
@@ -77,9 +76,9 @@ public class RelationalIntegrationLogRepository : IIntegrationLogRepository
             Timestamp = DateTimeOffset.UtcNow.ToLocalTime(),
         };
 
-        if (item.ItemStatus == IntegrationStatus.Failed)
+        if (item.ItemStatus == LogLevel.Failed)
         {
-            detail.Status = IntegrationStatus.Failed;
+            detail.Status = LogLevel.Failed;
             _context.IntegrationDetails?.Update(detail);
             _context.SaveChanges();
         }

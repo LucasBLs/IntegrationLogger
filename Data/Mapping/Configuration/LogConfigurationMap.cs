@@ -13,8 +13,6 @@ public class LogConfigurationMap : IEntityTypeConfiguration<LogConfiguration>
             .HasKey(x => x.Id);
 
         builder.Property(x => x.Id);
-        builder.Property(x => x.LogSource)
-            .HasMaxLength(100);
         builder.Property(x => x.LogLevel)
             .HasConversion(new EnumToNumberConverter<LogLevel, int>());
         builder.Property(x => x.LogStepByStep);
@@ -27,7 +25,5 @@ public class LogConfigurationMap : IEntityTypeConfiguration<LogConfiguration>
         builder.HasOne(x => x.EmailConfiguration)
             .WithOne(x => x.LogConfiguration)
             .HasForeignKey<EmailConfiguration>(x => x.LogConfigurationId);
-
-        builder.HasIndex(x => x.LogSource);
     }
 }

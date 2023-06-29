@@ -10,7 +10,7 @@ public class GatewayDetail
     [BsonRepresentation(BsonType.String)]
     public Guid Id { get; set; } = Guid.NewGuid();
     public DetailType Type { get; set; }
-    public IntegrationStatus Status { get; set; }
+    public LogLevel Status { get; set; }
     public string? Message { get; set; }
     public string? Content { get; set; }
     [BsonRepresentation(BsonType.String)]

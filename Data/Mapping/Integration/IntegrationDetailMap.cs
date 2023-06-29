@@ -19,7 +19,7 @@ public class IntegrationDetailMap : IEntityTypeConfiguration<IntegrationDetail>
         builder.Property(x => x.DetailIdentifier);
 
         builder.Property(x => x.Status)
-            .HasConversion(new EnumToNumberConverter<IntegrationStatus, int>());
+            .HasConversion(new EnumToNumberConverter<LogLevel, int>());
 
         builder.Property(x => x.Message);
         builder.Property(x => x.IntegrationLogName);

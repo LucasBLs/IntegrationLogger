@@ -2,8 +2,9 @@ namespace IntegrationLogger.Enums;
 
 public enum LogLevel
 {
-    Info,
-    Warning,
-    Error,
+    Success,
+    Failed,
+    Alert,
+    NoResults,
     None
 }

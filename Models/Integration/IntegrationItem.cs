@@ -9,9 +9,8 @@ public class IntegrationItem
     [BsonId]
     [BsonRepresentation(BsonType.String)]
     public Guid Id { get; set; } = Guid.NewGuid();
-    public ItemType ItemType { get; set; }
     public string? ItemIdentifier { get; set; }
-    public IntegrationStatus ItemStatus { get; set; }
+    public LogLevel ItemStatus { get; set; }
     public string? Message { get; set; }
     public string? Content { get; set; } = string.Empty;
     [BsonRepresentation(BsonType.String)]

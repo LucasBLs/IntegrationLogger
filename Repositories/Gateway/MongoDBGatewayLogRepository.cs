@@ -62,7 +62,7 @@ public class MongoDBGatewayLogRepository : IApiGatewayLogRepository
     }
     public GatewayDetail AddGatewayDetail(GatewayLog log, DetailType type, string? message, object? content, int? GatewayLogStatusCode = null)
     {
-        IntegrationStatus statusCode = 0;
+        LogLevel statusCode = 0;
         if (GatewayLogStatusCode != null)
         {
             log.StatusCode = GatewayLogStatusCode.Value;
@@ -74,8 +74,8 @@ public class MongoDBGatewayLogRepository : IApiGatewayLogRepository
 
             statusCode = GatewayLogStatusCode switch
             {
-                >= 200 and <= 299 => IntegrationStatus.Success,
-                _ => IntegrationStatus.Failed,
+                >= 200 and <= 299 => LogLevel.Success,
+                _ => LogLevel.Failed,
             };
         }
 

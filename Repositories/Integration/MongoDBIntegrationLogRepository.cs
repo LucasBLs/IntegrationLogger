@@ -68,7 +68,6 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
     {
         var indexKeysBuilder = Builders<LogConfiguration>.IndexKeys;
         var compoundIndexKeys = indexKeysBuilder
-                                    .Ascending(l => l.LogSource)
                                     .Ascending(l => l.LogLevel);
         var indexOptions = new CreateIndexOptions { Name = "LogConfigurationIndex" };
         _logConfigurations.Indexes.CreateOne(new CreateIndexModel<LogConfiguration>(compoundIndexKeys, indexOptions));
@@ -86,7 +85,7 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
     #region AddLogs
     public IntegrationLog AddLog(string integrationName, string message, string externalSystem, string sourceSystem)
     {
-        LogLevel configuredLogLevel = _logConfigurations.Find(new BsonDocument()).FirstOrDefault()?.LogLevel ?? LogLevel.Info;
+        LogLevel configuredLogLevel = _logConfigurations.Find(new BsonDocument()).FirstOrDefault()?.LogLevel ?? LogLevel.Alert;
         if (configuredLogLevel == LogLevel.None)
             return new();
 
@@ -106,9 +105,9 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
         _integrationLogs.InsertOne(log);
         return log;
     }
-    public IntegrationDetail AddDetail(IntegrationLog log, IntegrationStatus status, string? detailIdentifier, string? message)
+    public IntegrationDetail AddDetail(IntegrationLog log, LogLevel status, string? detailIdentifier, string? message)
     {
-        LogLevel configuredLogLevel = _logConfigurations.Find(new BsonDocument()).FirstOrDefault()?.LogLevel ?? LogLevel.Info;
+        LogLevel configuredLogLevel = _logConfigurations.Find(new BsonDocument()).FirstOrDefault()?.LogLevel ?? LogLevel.Alert;
         if (configuredLogLevel == LogLevel.None)
             return new();
         IntegrationDetail detail = new()
@@ -125,15 +124,14 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
         _integrationDetails.InsertOne(detail);
         return detail;
     }
-    public IntegrationItem AddItem(IntegrationDetail detail, ItemType itemType, string itemIdentifier, IntegrationStatus itemStatus, string? message, object? content)
+    public IntegrationItem AddItem(IntegrationDetail detail, string itemIdentifier, LogLevel itemStatus, string? message, object? content)
     {
-        LogLevel configuredLogLevel = _logConfigurations.Find(new BsonDocument()).FirstOrDefault()?.LogLevel ?? LogLevel.Info;
+        LogLevel configuredLogLevel = _logConfigurations.Find(new BsonDocument()).FirstOrDefault()?.LogLevel ?? LogLevel.Alert;
         if (configuredLogLevel == LogLevel.None)
             return new();
         IntegrationItem item = new()
         {
             IntegrationDetailId = detail.Id,
-            ItemType = itemType,
             ItemIdentifier = itemIdentifier,
             ItemStatus = itemStatus,
             Message = message,
@@ -141,9 +139,9 @@ public class MongoDBIntegrationLogRepository : IIntegrationLogRepository
             Timestamp = DateTimeOffset.UtcNow.ToLocalTime(),
         };
 
-        if (item.ItemStatus == IntegrationStatus.Failed)
+        if (item.ItemStatus == LogLevel.Failed)
         {
-            detail.Status = IntegrationStatus.Failed;
+            detail.Status = LogLevel.Failed;
 
             // Atualizar o documento existente no MongoDB
             var filter = Builders<IntegrationDetail>.Filter.Eq(d => d.Id, detail.Id);

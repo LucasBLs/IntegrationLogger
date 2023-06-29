@@ -19,7 +19,7 @@ public class GatewayDetailMap : IEntityTypeConfiguration<GatewayDetail>
                 .HasConversion(new EnumToNumberConverter<DetailType, int>());
 
         builder.Property(x => x.Status)
-            .HasConversion(new EnumToNumberConverter<IntegrationStatus, int>());
+            .HasConversion(new EnumToNumberConverter<LogLevel, int>());
 
         builder.Property(x => x.Message);
 

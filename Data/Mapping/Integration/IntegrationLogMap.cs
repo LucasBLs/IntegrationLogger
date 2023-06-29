@@ -1,3 +1,4 @@
+using IntegrationLogger.Models.Configuration;
 using IntegrationLogger.Models.Integration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -24,6 +25,10 @@ public class IntegrationLogMap : IEntityTypeConfiguration<IntegrationLog>
         builder.HasMany(x => x.Details)
            .WithOne(x => x.IntegrationLog)
            .HasForeignKey(x => x.IntegrationLogId);
+
+        builder.HasOne(x => x.LogConfiguration)
+            .WithOne(x => x.IntegrationLog)
+            .HasForeignKey<LogConfiguration>(x => x.IntegrationLogId);
 
         builder.HasIndex(x => x.Timestamp);
         builder.HasIndex(x => x.IntegrationName);

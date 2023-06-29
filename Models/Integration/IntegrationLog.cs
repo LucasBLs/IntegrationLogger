@@ -1,6 +1,7 @@
 using IntegrationLogger.Enums;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
+using IntegrationLogger.Models.Configuration;
 
 namespace IntegrationLogger.Models.Integration;
 
@@ -16,4 +17,5 @@ public class IntegrationLog
     [BsonRepresentation(BsonType.String)]
     public DateTimeOffset Timestamp { get; set; }
     public ICollection<IntegrationDetail>? Details { get; set; }
+    public LogConfiguration? LogConfiguration { get; set; }
 }

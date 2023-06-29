@@ -9,7 +9,7 @@ public class IntegrationDetail
     [BsonId]
     [BsonRepresentation(BsonType.String)]
     public Guid Id { get; set; } = Guid.NewGuid();
-    public IntegrationStatus Status { get; set; }
+    public LogLevel Status { get; set; }
     public string? DetailIdentifier { get; set; }
     public string? Message { get; set; }
     [BsonRepresentation(BsonType.String)]
