@@ -8,6 +8,7 @@ using IntegrationLogger.Repositories.Integration;
 using IntegrationLogger.Repositories.Interfaces;
 using IntegrationLogger.Utils;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -89,6 +90,11 @@ public static class IntegrationLoggerExtensions
     static void ConfigureCompressionAndControllers(IServiceCollection services)
     {
         services.AddMemoryCache();
+        services.Configure<FormOptions>(options =>
+        {
+            options.ValueLengthLimit = int.MaxValue;
+        });
+        
         services.AddResponseCompression(option =>
         {
             option.Providers.Add<GzipCompressionProvider>();
