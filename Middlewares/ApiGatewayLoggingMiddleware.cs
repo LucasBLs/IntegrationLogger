@@ -41,6 +41,7 @@ public class ApiGatewayLoggingMiddleware
         "/logs",
         "/Order"
     };
+
     public ApiGatewayLoggingMiddleware(RequestDelegate next)
     {
         _next = next;
@@ -53,9 +54,10 @@ public class ApiGatewayLoggingMiddleware
             await _next(context);
             return;
         }
-        var watch = new Stopwatch();
 
+        var watch = new Stopwatch();
         watch.Start();
+
         var originalResponseBodyStream = context.Response.Body;
         using var responseBody = new MemoryStream();
         context.Response.Body = responseBody;
@@ -67,7 +69,6 @@ public class ApiGatewayLoggingMiddleware
 
         watch.Stop();
         var gatewayLog = repository.AddGatewayLog(projectName, context.Request.Path, context.Request.Method, $"{context.Connection.RemoteIpAddress}", context.Response.StatusCode, watch.ElapsedMilliseconds);
-
         repository.AddGatewayDetail(gatewayLog, DetailType.Request, "Request Received", requestContent);
 
         var statusCode = context.Response.StatusCode;
@@ -77,9 +78,10 @@ public class ApiGatewayLoggingMiddleware
         }
 
         var responseContent = await FormatResponse(context.Response);
-
         repository.AddGatewayDetail(gatewayLog, DetailType.Response, "Response Sent", responseContent, statusCode);
+
         await responseBody.CopyToAsync(originalResponseBodyStream);
+        responseBody.Seek(0, SeekOrigin.Begin); // Resetar a posição do stream antes de copiar
     }
 
     private async Task<string> FormatRequest(HttpRequest request)
@@ -87,9 +89,11 @@ public class ApiGatewayLoggingMiddleware
         request.EnableBuffering();
 
         string bodyAsText;
-        using var reader = new StreamReader(request.Body, Encoding.UTF8, leaveOpen: true);
-        bodyAsText = await reader.ReadToEndAsync();
-        request.Body.Position = 0; // Reset the request body stream position for next middleware
+        using (var reader = new StreamReader(request.Body, Encoding.UTF8, leaveOpen: true))
+        {
+            bodyAsText = await reader.ReadToEndAsync();
+            request.Body.Position = 0; // Resetar a posição do stream do corpo da requisição para permitir a leitura por outros middlewares
+        }
 
         var queryString = request.QueryString.HasValue ? Uri.UnescapeDataString($"{request.QueryString.Value}") : "";
         var url = $"{request.Scheme}://{request.Host}{request.Path} {queryString}";
@@ -101,7 +105,7 @@ public class ApiGatewayLoggingMiddleware
     {
         response.Body.Seek(0, SeekOrigin.Begin);
         string text = await new StreamReader(response.Body).ReadToEndAsync();
-        response.Body.Seek(0, SeekOrigin.Begin);
+        response.Body.Seek(0, SeekOrigin.Begin); // Resetar a posição do stream do corpo da resposta para permitir a leitura por outros middlewares
 
         if (response.ContentType != null && response.ContentType.ToLower().Contains("application/json"))
         {
