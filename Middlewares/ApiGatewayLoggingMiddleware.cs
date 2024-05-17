@@ -62,26 +62,35 @@ public class ApiGatewayLoggingMiddleware
         using var responseBody = new MemoryStream();
         context.Response.Body = responseBody;
 
-        await _next(context);
-
-        var projectName = context.Items["ProjectName"] as string ?? "Project Not Found";
-        var requestContent = await FormatRequest(context.Request);
-
-        watch.Stop();
-        var gatewayLog = repository.AddGatewayLog(projectName, context.Request.Path, context.Request.Method, $"{context.Connection.RemoteIpAddress}", context.Response.StatusCode, watch.ElapsedMilliseconds);
-        repository.AddGatewayDetail(gatewayLog, DetailType.Request, "Request Received", requestContent);
-
-        var statusCode = context.Response.StatusCode;
-        if (context.Response.Headers.ContainsKey("X-StatusCode"))
+        try
         {
-            int.TryParse(context.Response.Headers["X-StatusCode"], out statusCode);
+            await _next(context);
+
+            var projectName = context.Items["ProjectName"] as string ?? "Project Not Found";
+            var requestContent = await FormatRequest(context.Request);
+
+            watch.Stop();
+            var gatewayLog = repository.AddGatewayLog(projectName, context.Request.Path, context.Request.Method, $"{context.Connection.RemoteIpAddress}", context.Response.StatusCode, watch.ElapsedMilliseconds);
+            repository.AddGatewayDetail(gatewayLog, DetailType.Request, "Request Received", requestContent);
+
+            var statusCode = context.Response.StatusCode;
+            if (context.Response.Headers.ContainsKey("X-StatusCode"))
+            {
+                int.TryParse(context.Response.Headers["X-StatusCode"], out statusCode);
+            }
+
+            var responseContent = await FormatResponse(context.Response);
+            repository.AddGatewayDetail(gatewayLog, DetailType.Response, "Response Sent", responseContent, statusCode);
         }
-
-        var responseContent = await FormatResponse(context.Response);
-        repository.AddGatewayDetail(gatewayLog, DetailType.Response, "Response Sent", responseContent, statusCode);
-
-        await responseBody.CopyToAsync(originalResponseBodyStream);
-        responseBody.Seek(0, SeekOrigin.Begin); // Resetar a posição do stream antes de copiar
+        catch (Exception ex)
+        {
+            // Log the exception or handle it as needed
+        }
+        finally
+        {
+            responseBody.Seek(0, SeekOrigin.Begin); // Resetar a posição do stream antes de copiar
+            await responseBody.CopyToAsync(originalResponseBodyStream);
+        }
     }
 
     private async Task<string> FormatRequest(HttpRequest request)
